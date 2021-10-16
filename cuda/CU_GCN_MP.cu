@@ -8,11 +8,13 @@
 
 #define NUM_NODES 3
 
-#define FEATURE_LEN 2
+#define FEATURE_LEN 3
 
 
-void GCNLayer(float edgeIndex[][4], float featureTensor[][2], float *aggregationVar, float *nodeDegrees) {
+namespace CU_MP {
 
+void GCNLayer(float* edgeIndex, float* featureTensor, float* aggregationVar, float* nodeDegrees) {
+/*
         for(int i=0; i<NUM_NODES; i++) {
                 for(int j=0; j<DIRECTED_EDGES; j++) {
                         if(edgeIndex[0][j] == i) {// if there is an edge incoming to node i
@@ -28,7 +30,7 @@ void GCNLayer(float edgeIndex[][4], float featureTensor[][2], float *aggregation
                 aggregationVar[0] = 0.0;
                 aggregationVar[1] = 0.0;
         }
-
+*/
 }
 
 __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees) {
@@ -52,3 +54,6 @@ __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggre
 
 
 }
+
+
+} // namespace end

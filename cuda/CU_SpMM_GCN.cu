@@ -83,7 +83,7 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	// ----- calculation of D^-1/2 * A^ * D^-1/2 * X ----- //
 	cudaMalloc(&d_DADX,n_nodes * n_features * sizeof(float));
-	gpu_blas_mmul(d_X, d_DAD, d_DADX, n_features, n_nodes, n_features, false, false);
+	gpu_blas_mmul(d_DAD, d_DAD, d_DADX, n_features, n_nodes, n_features, false, false);
 	cudaFree(d_DAD);
 	cudaFree(d_X);
 

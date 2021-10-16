@@ -36,9 +36,9 @@ int main() {
 
 	auto start = std::chrono::steady_clock::now();
 
-	GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
-	GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
 	auto end = std::chrono::steady_clock::now();
 
@@ -54,7 +54,7 @@ int main() {
 	float *featureVectorOutput;
 	cudaMallocManaged( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
         start = std::chrono::steady_clock::now();
-        GINLayer<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, 1.0, featureVectorOutput);
+        //GINLayer<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, 1.0, featureVectorOutput);
         end = std::chrono::steady_clock::now();
         dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
