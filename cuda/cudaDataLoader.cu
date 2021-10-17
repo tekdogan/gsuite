@@ -12,6 +12,8 @@ int main() {
 
 	float aggregationVar[2], nodeDegrees[3];
 
+	std::unordered_map<int,int> nodeMap;
+
 	cudaMallocManaged( (void**) &aggregationVar, 2 * sizeof(float));
 	cudaMemcpy(aggregationVar, h_aggregationVar, 2*sizeof(float), cudaMemcpyHostToDevice);
 
@@ -41,7 +43,7 @@ int main() {
 
 	try {
 		h_featureVector = (float*) calloc(numOfNodes*featureSize, sizeof(float));
-		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize);
+		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize, nodeMap);
 		cudaMallocManaged( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
 		cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
 	} catch(...) {
@@ -59,10 +61,10 @@ int main() {
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
 	std::cout << "2-layer GCN execution took " << dur_ms.count() << " ms\n";
 
-	for(int i=0; i<3; i++) {
-		std::cout << "Node" << i << " feature 0: " << *(featureVector + featureSize*i) << std::endl;
-		std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
-	}
+	//for(int i=0; i<3; i++) {
+	//	std::cout << "Node" << i << " feature 0: " << *(featureVector + featureSize*i) << std::endl;
+	//	std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
+	//}
 
 
 	float *featureVectorOutput;
@@ -73,10 +75,10 @@ int main() {
         dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
 
-	for(int i=0; i<3; i++) {
-                std::cout << "Node" << i << " feature 0: " << *(featureVectorOutput + featureSize*i) << std::endl;
-                std::cout << "Node" << i << " feature 1: " << *(featureVectorOutput + featureSize*i + 1) << std::endl;
-        }
+	//for(int i=0; i<3; i++) {
+        //        std::cout << "Node" << i << " feature 0: " << *(featureVectorOutput + featureSize*i) << std::endl;
+        //        std::cout << "Node" << i << " feature 1: " << *(featureVectorOutput + featureSize*i + 1) << std::endl;
+        //}
 
 	float *adjMatrix = (float*)calloc(numOfNodes*numOfNodes, sizeof(float));
 
@@ -99,18 +101,23 @@ int main() {
 
 	std::cout << "CU_SpMM::GCNLayer operation returned successfully!\n";
 
-	for(int i=0; i<featureSize; i++) {
-		for(int j=0; j<numOfNodes; j++) {
-			std::cout << *(outputMatrix + i*numOfNodes + j) << " ";
-		}
-		std::cout << std::endl;
-	}
+	//for(int i=0; i<featureSize; i++) {
+	//	for(int j=0; j<numOfNodes; j++) {
+	//		std::cout << *(outputMatrix + i*numOfNodes + j) << " ";
+	//	}
+	//	std::cout << std::endl;
+	//}
 
 	cudaFree(edgeIndex);
 	cudaFree(featureVector);
 	cudaFree(featureVectorOutput);
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
+
+	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+	//for( const std::pair<int,int>& n : nodeMap ) {
+	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	//}
 
 	return 0;
 }
@@ -170,7 +177,7 @@ int getFeatureSizeFromFile(const char* fileName) {
 	if(dsFile.is_open()) {
 		getline(dsFile, line);
 		std::istringstream ss(line);
-		while(std::getline(ss, word, ' ')) {
+		while(std::getline(ss, word, '\t')) {
 			numOfFeatures++;
 		}
 	}
@@ -202,7 +209,7 @@ int getNumOfNodesFromFile(const char* fileName) {
 
 }
 
-void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize) {
+void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<int, int> &nodeMap) {
 	std::ifstream dsFile(fileName);
         std::string line;
 
@@ -212,10 +219,13 @@ void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int f
                 while(getline(dsFile, line)) {
                         std::istringstream ss(line);
                         std::string word;
-			std::getline(ss, word, ' '); // escape node index
-                        while(std::getline(ss, word, ' ')) {
-                                *(featureVector + i*featureSize + j) = std::stof(word);
-                                j += 1;
+			std::getline(ss, word, '\t'); // escape node index
+			nodeMap.insert({i,std::stof(word)});
+                        while(std::getline(ss, word, '\t')) {
+				if(word.length() < 5) {
+                                    *(featureVector + i*featureSize + j) = std::stof(word);
+                                    j += 1;
+				}
                         }
                 i++;
                 j = 0;

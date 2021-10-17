@@ -24,8 +24,8 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 		*(adjMatrix + (n_nodes+1)*i) += 1.0;
 	}
 
-	printf("A matrix:\n");
-	printDenseMatrix(adjMatrix, n_nodes, n_nodes);
+	//printf("A matrix:\n");
+	//printDenseMatrix(adjMatrix, n_nodes, n_nodes);
 
 	// define device matrices
         float *d_A, *d_D, *d_DA, *d_DAD, *d_DADX, *d_X;
@@ -44,8 +44,8 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	*(D + (n_nodes+1)*i) = sqrt((int)*(D + (n_nodes+1)*i));
 	}
 
-	printf("D matrix:\n");
-	printDenseMatrix(D, n_nodes, n_nodes);
+	//printf("D matrix:\n");
+	//printDenseMatrix(D, n_nodes, n_nodes);
 
 
 	// migrate A and D matrices to device
@@ -61,8 +61,8 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	cudaFree(d_A);
 
 	cudaMemcpy(DA,d_DA,n_nodes * n_nodes * sizeof(float),cudaMemcpyDeviceToHost);
-	printf("DA matrix:\n");
-	printDenseMatrix(DA, n_nodes, n_nodes);
+	//printf("DA matrix:\n");
+	//printDenseMatrix(DA, n_nodes, n_nodes);
         
 	// ----- calculation of D^-1/2 * A^ * D^-1/2 ----- //
 	cudaMalloc(&d_DAD,n_nodes * n_nodes * sizeof(float));
@@ -72,15 +72,15 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	float* DAD = (float*)calloc(n_nodes*n_nodes, sizeof(float));
 	cudaMemcpy(DAD,d_DAD,n_nodes * n_nodes * sizeof(float),cudaMemcpyDeviceToHost);
-	printf("DAD matrix:\n");
-	printDenseMatrix(DAD, n_nodes, n_nodes);
+	//printf("DAD matrix:\n");
+	//printDenseMatrix(DAD, n_nodes, n_nodes);
         
 	// migrate node feature values from host to device
 	cudaMalloc(&d_X, n_nodes * n_features * sizeof(float));
 	cudaMemcpy(d_X, featureTensor, n_nodes * n_features * sizeof(float), cudaMemcpyHostToDevice);
 
-	printf("X matrix:\n");
-	printDenseMatrix(featureTensor, n_nodes, n_features);
+	//printf("X matrix:\n");
+	//printDenseMatrix(featureTensor, n_nodes, n_features);
 
 	// ----- calculation of D^-1/2 * A^ * D^-1/2 * X ----- //
 	cudaMalloc(&d_DADX,n_nodes * n_features * sizeof(float));
@@ -93,8 +93,8 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	cudaMemcpy(DADX, d_DADX, n_nodes * n_features * sizeof(float), cudaMemcpyDeviceToHost);
 	memcpy(output, DADX, sizeof(float)*(n_nodes*n_features));
 
-	printf("DADX matrix:\n");
-	printDenseMatrix(DADX, n_nodes, n_features);
+	//printf("DADX matrix:\n");
+	//printDenseMatrix(DADX, n_nodes, n_features);
 //    }
 
 }

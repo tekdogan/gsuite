@@ -9,6 +9,7 @@
 #include<cuda.h>
 #include"CU_SpMM_GCN.h"
 #include"Data_Util.h"
+#include<unordered_map>
 
 int getEdgeIndexSizeFromFile(const char* fileName);
 
@@ -18,4 +19,4 @@ int getFeatureSizeFromFile(const char* fileName);
 
 int getNumOfNodesFromFile(const char* fileName);
 
-void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize);
+void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<int, int> &nodeMap);
