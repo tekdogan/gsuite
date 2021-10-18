@@ -32,22 +32,22 @@ int main() {
 	std::cout << "numOfNodes: " << numOfNodes << std::endl;
 
 	try {
-		h_edgeIndex = (float*) calloc(featureSize*edgeIndexSize, sizeof(float));
-		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize);
-		cudaMallocManaged( (void**) &edgeIndex, featureSize*edgeIndexSize * sizeof(float));
-		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)featureSize*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
-		
-	} catch(...) {
-		std::cout << "Could not allocate memory space for edgeIndex!\n";
-	}
-
-	try {
 		h_featureVector = (float*) calloc(numOfNodes*featureSize, sizeof(float));
 		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize, nodeMap);
 		cudaMallocManaged( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
 		cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
 	} catch(...) {
 		std::cout << "Could not allocate memory space for featureVector!\n";
+	}
+	
+	try {
+		h_edgeIndex = (float*) calloc(featureSize*edgeIndexSize, sizeof(float));
+		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
+		cudaMallocManaged( (void**) &edgeIndex, featureSize*edgeIndexSize * sizeof(float));
+		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)featureSize*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
+		
+	} catch(...) {
+		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
 
 	auto start = std::chrono::steady_clock::now();
