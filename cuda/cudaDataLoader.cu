@@ -220,7 +220,7 @@ void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int f
                         std::istringstream ss(line);
                         std::string word;
 			std::getline(ss, word, '\t'); // escape node index
-			nodeMap.insert({i,std::stof(word)});
+			nodeMap.insert({std::stof(word),i});
                         while(std::getline(ss, word, '\t')) {
 				if(word.length() < 5) {
                                     *(featureVector + i*featureSize + j) = std::stof(word);
