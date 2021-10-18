@@ -82,7 +82,9 @@ int main() {
 
 	float *adjMatrix = (float*)calloc(numOfNodes*numOfNodes, sizeof(float));
 
+	std::cout << "DEBUG: coo2sparse operation start...\n";
         coo2sparse(edgeIndex, adjMatrix, edgeIndexSize, numOfNodes);
+	std::cout << "DEBUG: coo2sparse operation successful!\n";
 
 	/*for(int i=0; i<numOfNodes; i++) {
                 for(int j=0; j<numOfNodes; j++) {
@@ -93,6 +95,7 @@ int main() {
 
 	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 
+	std::cout << "DEBUG: CU_SpMM::GCN start...\n";
 	start = std::chrono::steady_clock::now();
 	CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
 	end = std::chrono::steady_clock::now();
