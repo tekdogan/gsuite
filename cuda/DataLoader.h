@@ -13,7 +13,7 @@
 
 int getEdgeIndexSizeFromFile(const char* fileName);
 
-void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges);
+void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<int, int> &nodeMap);
 
 int getFeatureSizeFromFile(const char* fileName);
 
