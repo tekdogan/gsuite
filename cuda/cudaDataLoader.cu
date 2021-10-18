@@ -144,7 +144,7 @@ int getEdgeIndexSizeFromFile(const char* fileName) {
 }
 
 void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges,
-			   	std::unordered_map<int, int> &nodeMap) {
+			   std::unordered_map<int, int> &nodeMap) {
 
 	std::ifstream dsFile(fileName);
 	std::string line;
@@ -155,7 +155,7 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 		while(getline(dsFile, line)) {
 			std::istringstream ss(line);
 			std::string word;
-			while(std::getline(ss, word, ' ')) {
+			while(std::getline(ss, word, '\t')) {
 				*(edgeIndex + (numOfEdges*i) + j) = nodeMap.find(std::stof(word))->second;
 				i = 1;
 			}
