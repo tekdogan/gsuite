@@ -20,11 +20,11 @@ int main() {
 	cudaMallocManaged( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites";
+	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content";
+	const char* featureFileName = "cora.content.bak2";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -80,7 +80,8 @@ int main() {
         //        std::cout << "Node" << i << " feature 1: " << *(featureVectorOutput + featureSize*i + 1) << std::endl;
         //}
 
-	float *adjMatrix = (float*)calloc(numOfNodes*numOfNodes, sizeof(float));
+	//float *adjMatrix = (float*)calloc(numOfNodes*numOfNodes, sizeof(float));
+	float *adjMatrix = (float*)calloc(edgeIndexSize*edgeIndexSize, sizeof(float));
 
 	std::cout << "DEBUG: coo2sparse operation start...\n";
         coo2sparse(edgeIndex, adjMatrix, edgeIndexSize, numOfNodes);
