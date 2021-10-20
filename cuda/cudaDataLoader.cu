@@ -52,19 +52,19 @@ int main() {
 
 	auto start = std::chrono::steady_clock::now();
 
-	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
-	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
 	auto end = std::chrono::steady_clock::now();
 
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
 	std::cout << "2-layer GCN execution took " << dur_ms.count() << " ms\n";
 
-	for(int i=0; i<3; i++) {
-		std::cout << "Node" << i << " feature 0: " << *(featureVector + featureSize*i) << std::endl;
-		std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
-	}
+	//for(int i=0; i<3; i++) {
+	//	std::cout << "Node" << i << " feature 0: " << *(featureVector + featureSize*i) << std::endl;
+	//	std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
+	//}
 
 
 	float *featureVectorOutput;
@@ -98,7 +98,7 @@ int main() {
 
 	std::cout << "DEBUG: CU_SpMM::GCN start...\n";
 	start = std::chrono::steady_clock::now();
-	//CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
+	CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
 	end = std::chrono::steady_clock::now();
         dur_ms = end-start;
         std::cout << "1-layer CU_SpMM::GCN execution took " << dur_ms.count() << " ms\n";
