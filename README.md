@@ -8,7 +8,7 @@
 `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.1/lib64/`  
 
 ### Compilation
-`nvcc -lcublas -std=c++11 -arch=compute_61 cuBlasUtil.cu Data_Util.cu CU_SpMM_GCN.cu cudaDataLoader.cu -o cudaDataLoader.o`  
+`nvcc -lcublas -std=c++11 -arch=compute_61 cuBlasUtil.cu Data_Util.cu CU_GCN_MP.cu CU_SpMM_GCN.cu cudaDataLoader.cu -o cudaDataLoader.o`  
 
 ### Profile via NVPROF
 `nvprof -f --analysis-metrics -o cudaDataLoader.nvprof ./cudaDataLoader.o --benchmark`  
