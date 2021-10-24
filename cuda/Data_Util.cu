@@ -1,8 +1,6 @@
 #include"Data_Util.h"
 
 
-
-
 void matrix_mul(double* m1, double* m2, double* m3, int m1r, int m1c, int m2r, int m2c) {
 
 	int i,j,k;
@@ -66,3 +64,4 @@ void printDenseMatrix(float* A, int row, int col) {
 	}
 
 }
+

@@ -8,7 +8,9 @@
 #include"C_GIN_WL.h"
 #include<cuda.h>
 #include"CU_SpMM_GCN.h"
+extern "C" {
 #include"Data_Util.h"
+}
 #include<unordered_map>
 
 int getEdgeIndexSizeFromFile(const char* fileName);
