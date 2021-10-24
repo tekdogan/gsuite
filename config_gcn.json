@@ -1,0 +1,10 @@
+{
+    "gpu": {
+        "use": true,
+        "id": 0
+    },
+    
+    "model": "GCN",
+    "dataset": "ENZYMES"
+    
+}
