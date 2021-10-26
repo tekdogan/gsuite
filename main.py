@@ -69,6 +69,10 @@ def main():
     print("Number of input dimensions of GCN model is: " + str(gcn.inD))
     print("Number of putput dimensions of GCN model is: " + str(gcn.outD))
     gcn.deneme()
+
+
+    GCN_SpMM_Layer = getattr(importlib.import_module('gcn_spmm_cu'), 'gcnlayer')
+    GCN_SpMM_Layer()
     #lib.clean()
     #lib.deneme()
 
