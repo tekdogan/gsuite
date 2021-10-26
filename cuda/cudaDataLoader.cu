@@ -2,7 +2,11 @@
 
 #define SIZE 1024
 
-int main() {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int LoadData() {
 
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
@@ -240,3 +244,8 @@ void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int f
                 std::cout << "Could not open the feature dataset file!\n";
         }
 }
+
+
+#ifdef __cplusplus
+}
+#endif
