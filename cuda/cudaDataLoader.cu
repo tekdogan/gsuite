@@ -24,11 +24,11 @@ int LoadData() {
 	cudaMallocManaged( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites";
+	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content";
+	const char* featureFileName = "cora.content.bak2";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
