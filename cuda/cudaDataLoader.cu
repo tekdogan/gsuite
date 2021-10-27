@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-int LoadData() {
+int LoadData(int arg) {
 
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
@@ -54,6 +54,8 @@ int LoadData() {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
 
+	if(arg == 0) { // execute CU_MP_GCN
+
 	auto start = std::chrono::steady_clock::now();
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
@@ -70,19 +72,26 @@ int LoadData() {
 	//	std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
 	//}
 
+	} // CU_MP_GCN end
+
+	else if(arg == 1) { // execute C_MP_GIN
 
 	float *featureVectorOutput;
 	cudaMallocManaged( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
-        start = std::chrono::steady_clock::now();
+        auto start = std::chrono::steady_clock::now();
         //GINLayer<<<1,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, 1.0, featureVectorOutput);
-        end = std::chrono::steady_clock::now();
-        dur_ms = end-start;
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
 
 	//for(int i=0; i<3; i++) {
         //        std::cout << "Node" << i << " feature 0: " << *(featureVectorOutput + featureSize*i) << std::endl;
         //        std::cout << "Node" << i << " feature 1: " << *(featureVectorOutput + featureSize*i + 1) << std::endl;
         //}
+
+	} // C_MP_GIN end
+
+	else if(arg == 2) { // execute CU_SpMM_GCN
 
 	//float *adjMatrix = (float*)calloc(numOfNodes*numOfNodes, sizeof(float));
 	float *adjMatrix = (float*)calloc(edgeIndexSize*edgeIndexSize, sizeof(float));
@@ -101,10 +110,10 @@ int LoadData() {
 	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 
 	std::cout << "DEBUG: CU_SpMM::GCN start...\n";
-	start = std::chrono::steady_clock::now();
+	auto start = std::chrono::steady_clock::now();
 	CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
-	end = std::chrono::steady_clock::now();
-        dur_ms = end-start;
+	auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer CU_SpMM::GCN execution took " << dur_ms.count() << " ms\n";
 
 	std::cout << "CU_SpMM::GCNLayer operation returned successfully!\n";
@@ -116,9 +125,11 @@ int LoadData() {
 	//	std::cout << std::endl;
 	//}
 
+	} // CU_SpMM_GCN end
+
 	cudaFree(edgeIndex);
 	cudaFree(featureVector);
-	cudaFree(featureVectorOutput);
+	//cudaFree(featureVectorOutput);
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
 

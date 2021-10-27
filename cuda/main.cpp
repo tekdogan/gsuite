@@ -4,9 +4,13 @@
 
 #include"DataLoader.h"
 
-int main() {
+int main(int argc, char *argv[]) {
 
-	LoadData();
+	if(argc == 1) {
+		std::cout << "Please pass a parameter to executable. (e.g. ./cudaDataLoader.o 2)\n";
+	}
+
+	LoadData(atoi(argv[1]));
 
 	return 0;
 }

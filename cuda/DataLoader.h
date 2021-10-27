@@ -15,7 +15,7 @@
 extern "C" {
 
 // for direct usage from cpp main
-int LoadData();
+int LoadData(int);
 
 int getEdgeIndexSizeFromFile(const char* fileName);
 
