@@ -7,11 +7,15 @@
 #include"C_GCN_MP.h"
 #include"C_GIN_WL.h"
 #include<cuda.h>
+#include<cublas_v2.h>
 #include"CU_SpMM_GCN.h"
 #include"Data_Util.h"
 #include<unordered_map>
 
 extern "C" {
+
+// for direct usage from cpp main
+int LoadData();
 
 int getEdgeIndexSizeFromFile(const char* fileName);
 
