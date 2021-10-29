@@ -18,10 +18,10 @@ int LoadData(int arg) {
 
 	std::unordered_map<int,int> nodeMap;
 
-	cudaMallocManaged( (void**) &aggregationVar, 2 * sizeof(float));
+	cudaMalloc( (void**) &aggregationVar, 2 * sizeof(float));
 	cudaMemcpy(aggregationVar, h_aggregationVar, 2*sizeof(float), cudaMemcpyHostToDevice);
 
-	cudaMallocManaged( (void**) &nodeDegrees, 3*sizeof(float));
+	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
 	const char* edgeIndexFileName = "cora.cites.bak2";
@@ -38,7 +38,7 @@ int LoadData(int arg) {
 	try {
 		h_featureVector = (float*) calloc(numOfNodes*featureSize, sizeof(float));
 		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize, nodeMap);
-		cudaMallocManaged( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
+		cudaMalloc( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
 		cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
 	} catch(...) {
 		std::cout << "Could not allocate memory space for featureVector!\n";
@@ -47,7 +47,7 @@ int LoadData(int arg) {
 	try {
 		h_edgeIndex = (float*) calloc(featureSize*edgeIndexSize, sizeof(float));
 		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
-		cudaMallocManaged( (void**) &edgeIndex, featureSize*edgeIndexSize * sizeof(float));
+		cudaMalloc( (void**) &edgeIndex, featureSize*edgeIndexSize * sizeof(float));
 		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)featureSize*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
 		
 	} catch(...) {
@@ -58,9 +58,9 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 
-	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
-	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
+	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees);
 
 	auto end = std::chrono::steady_clock::now();
 
@@ -77,7 +77,7 @@ int LoadData(int arg) {
 	else if(arg == 1) { // execute C_MP_GIN
 
 	float *featureVectorOutput;
-	cudaMallocManaged( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
+	cudaMalloc( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
         auto start = std::chrono::steady_clock::now();
         //GINLayer<<<1,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, 1.0, featureVectorOutput);
         auto end = std::chrono::steady_clock::now();
