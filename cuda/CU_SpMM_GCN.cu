@@ -56,7 +56,7 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	// ----- calculation of D^-1/2 * A^ ----- //
 	cudaMalloc(&d_DA,n_nodes * n_nodes * sizeof(float));
-	gpu_blas_mmul(d_A, d_D, d_DA, n_nodes, n_nodes, n_nodes, false, false);
+	gpu_blas_mmul(d_A, d_D, d_DA, n_nodes, n_nodes, n_nodes, false, false, 1.0, 0.0);
 	float* DA = (float*)calloc(n_nodes*n_nodes, sizeof(float));
 	//gpu_blas_mmul(D, adjMatrix, DA, n_nodes, n_nodes, n_nodes);
 	cudaFree(d_A);
@@ -67,7 +67,7 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
         
 	// ----- calculation of D^-1/2 * A^ * D^-1/2 ----- //
 	cudaMalloc(&d_DAD,n_nodes * n_nodes * sizeof(float));
-	gpu_blas_mmul(d_D, d_DA, d_DAD, n_nodes, n_nodes, n_nodes, false, false);
+	gpu_blas_mmul(d_D, d_DA, d_DAD, n_nodes, n_nodes, n_nodes, false, false, 1.0, 0.0);
         cudaFree(d_DA);
         cudaFree(d_D);
 
@@ -85,7 +85,7 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	// ----- calculation of D^-1/2 * A^ * D^-1/2 * X ----- //
 	cudaMalloc(&d_DADX,n_nodes * n_features * sizeof(float));
-	gpu_blas_mmul(d_X, d_DAD, d_DADX, n_features, n_nodes, n_features, false, false);
+	gpu_blas_mmul(d_X, d_DAD, d_DADX, n_features, n_nodes, n_features, false, false, 1.0, 0.0);
 	cudaFree(d_DAD);
 	cudaFree(d_X);
 

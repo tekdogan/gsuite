@@ -20,11 +20,14 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
         
 
 	// create identity matrix I here
+	float *d_I;
+	cudaMalloc(&d_I,n_nodes * n_nodes * sizeof(float));
+	initIdentityGPU<<<16,1024>>>(d_I, n_nodes, n_nodes);
         
         // ----- calculation of (1+e)*I ----- //
-	for(int i=0; i<n_nodes; i++) {
-		*(adjMatrix + (n_nodes+1)*i) += 1.0;
-	}
+	//for(int i=0; i<n_nodes; i++) {
+
+	//}
 
 	//printf("A matrix:\n");
 	//printDenseMatrix(adjMatrix, n_nodes, n_nodes);
@@ -32,30 +35,18 @@ void GCNLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	// define device matrices
         float *d_A, *d_D, *d_DA, *d_DAD, *d_DADX, *d_X;
 
-	// allocate device A and D matrices
+	// allocate device A matrix
         cudaMalloc(&d_A,n_nodes * n_nodes * sizeof(float));
-        cudaMalloc(&d_D,n_nodes * n_nodes * sizeof(float));
                 
+	// migrate A matrix to device
+	cudaMemcpy(d_A,adjMatrix,n_nodes * n_nodes * sizeof(float),cudaMemcpyHostToDevice);
+
 	// ----- calculation of A + (1+e)*I ----- //
 	float* D = (float*)calloc(n_nodes*n_nodes, sizeof(float));
-	for(int i=0; i<n_nodes; i++) {
-		for(int j=0; j<=i; j++) {
-		*(D + (n_nodes+1)*i) += *(adjMatrix + i*n_nodes + j);
-	}
-	// square root
-	*(D + (n_nodes+1)*i) = sqrt((int)*(D + (n_nodes+1)*i));
-	}
-
-	//printf("D matrix:\n");
-	//printDenseMatrix(D, n_nodes, n_nodes);
+	gpu_blas_mmul(d_I, d_A, d_AI, n_nodes, n_nodes, n_nodes, false, false);
 
 
-	// migrate A and D matrices to device
-        cudaMemcpy(d_A,adjMatrix,n_nodes * n_nodes * sizeof(float),cudaMemcpyHostToDevice);
-        cudaMemcpy(d_D,D,n_nodes * n_nodes * sizeof(float),cudaMemcpyHostToDevice);
-        
-
-	// ----- calculation of D^-1/2 * A^ ----- //
+	// ----- calculation of (A + (1+e)*I) * X ----- //
 	cudaMalloc(&d_DA,n_nodes * n_nodes * sizeof(float));
 	gpu_blas_mmul(d_A, d_D, d_DA, n_nodes, n_nodes, n_nodes, false, false);
 	float* DA = (float*)calloc(n_nodes*n_nodes, sizeof(float));
