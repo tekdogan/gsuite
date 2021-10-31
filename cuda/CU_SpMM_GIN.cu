@@ -39,7 +39,6 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	cudaMemcpy(d_A,adjMatrix,n_nodes * n_nodes * sizeof(float),cudaMemcpyHostToDevice);
 
 	// ----- calculation of A + (1+e)*I ----- //
-	float* D = (float*)calloc(n_nodes*n_nodes, sizeof(float));
 	gpu_blas_mmul(d_I, d_A, d_I, n_nodes, n_nodes, n_nodes, false, false, 1.0, (1.0 + epsilon));
 	cudaFree(d_A);
 
@@ -49,7 +48,7 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	// ----- calculation of (A + (1+e)*I) * X ----- //
 	cudaMalloc(&d_AIX,n_nodes * n_features * sizeof(float));
-	gpu_blas_mmul(d_X, d_I, d_AIX, n_nodes, n_nodes, n_nodes, false, false, 1.0, 0.0);
+	gpu_blas_mmul(d_X, d_I, d_AIX, n_features, n_nodes, n_features, false, false, 1.0, 0.0);
 	cudaFree(d_I);
 	cudaFree(d_X);
 
