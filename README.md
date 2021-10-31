@@ -5,7 +5,7 @@
 ### Before Compiling
 `export PATH=/usr/local/cuda-8.0/bin:$PATH`  
 `export CPATH=/usr/local/cuda-8.0/include:$CPATH`  
-`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-8.0/lib64/`  
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/usr/local/cuda-8.0/lib64/`  
 
 ### :boom: Compilation (for direct use)
 _in cuda dir, compile codes using the command line below_    
