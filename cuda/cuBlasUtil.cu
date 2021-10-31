@@ -2,11 +2,11 @@
 #include"cuBlasUtil.h"
 #include<stdio.h>
 
-void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k, bool transA, bool transB, float alpha, float beta) {
+void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k, bool transA, bool transB, float Alpha, float Beta) {
 
         int lda=m,ldb=k,ldc=m;
-        const float alf = alpha;
-        const float bet = beta;
+        const float alf = Alpha;
+        const float bet = Beta;
         const float *alpha = &alf;
         const float *beta = &bet;
 
@@ -40,7 +40,7 @@ void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k
 }
 
 
-__global__ void initIdentityGPU(int **devMatrix, int numR, int numC) {
+__global__ void initIdentityGPU(float **devMatrix, int numR, int numC) {
     int x = blockDim.x*blockIdx.x + threadIdx.x;
     int y = blockDim.y*blockIdx.y + threadIdx.y;
     if(y < numR && x < numC) {

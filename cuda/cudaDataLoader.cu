@@ -24,11 +24,11 @@ int LoadData(int arg) {
 	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites.bak2";
+	const char* edgeIndexFileName = "cora.cites";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content.bak2";
+	const char* featureFileName = "cora.content";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -78,8 +78,14 @@ int LoadData(int arg) {
 
 	float *featureVectorOutput;
 	cudaMalloc( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
+
+	float *adjMatrix = (float*)calloc(edgeIndexSize*edgeIndexSize, sizeof(float));
+	coo2sparse(edgeIndex, adjMatrix, edgeIndexSize, numOfNodes);
+
+	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
+
         auto start = std::chrono::steady_clock::now();
-        //GINLayer<<<1,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, 1.0, featureVectorOutput);
+        CU_SpMM::GINLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix, 0.1);
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
