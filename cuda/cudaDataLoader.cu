@@ -141,10 +141,10 @@ int LoadData(int arg) {
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
 
-	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
-	//for( const std::pair<int,int>& n : nodeMap ) {
-	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	//}
+	std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+	for( const std::pair<int,int>& n : nodeMap ) {
+		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	}
 
 	return 0;
 }
