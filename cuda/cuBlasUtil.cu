@@ -50,3 +50,19 @@ __global__ void initIdentityGPU(float **devMatrix, int numR, int numC) {
               devMatrix[y][x] = 0;
     }
 }
+
+
+void initIdentityMatrix(float* matrix, int R, int C) {
+
+	for(int i=0; i<R; i++) {
+		for(int j=0; j<C; j++) {
+			if(i == j) {
+				*( matrix + i*C + j ) = 1.0;
+			}
+			else {
+				*( matrix + i*C + j ) = 0.0;
+			}
+		}
+	}
+
+}

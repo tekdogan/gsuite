@@ -29,8 +29,14 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	//}
 
-	//printf("A matrix:\n");
-	//printDenseMatrix(adjMatrix, n_nodes, n_nodes);
+	printf("I matrix:\n");
+	float* I = (float*)calloc(n_nodes * n_nodes, sizeof(float));
+	//cudaMemcpy(I,d_I,n_nodes * n_nodes * sizeof(float), cudaMemcpyDeviceToHost);
+	initIdentityMatrix(I, n_nodes, n_nodes);
+	printDenseMatrix(I, n_nodes, n_nodes);
+
+	printf("A matrix:\n");
+	printDenseMatrix(adjMatrix, n_nodes, n_nodes);
 
 	// allocate device A matrix
         cudaMalloc(&d_A,n_nodes * n_nodes * sizeof(float));
