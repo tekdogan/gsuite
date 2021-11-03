@@ -24,11 +24,11 @@ int LoadData(int arg) {
 	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites.bak2";
+	const char* edgeIndexFileName = "cora.cites";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content.bak2";
+	const char* featureFileName = "cora.content";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -135,16 +135,18 @@ int LoadData(int arg) {
 
 	} // CU_SpMM_GCN end
 
+	printDenseMatrix(h_featureVector, featureSize, numOfNodes);
+
 	cudaFree(edgeIndex);
 	cudaFree(featureVector);
 	//cudaFree(featureVectorOutput);
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
 
-	std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
-	for( const std::pair<int,int>& n : nodeMap ) {
-		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	}
+	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+	//for( const std::pair<int,int>& n : nodeMap ) {
+	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	//}
 
 	return 0;
 }
