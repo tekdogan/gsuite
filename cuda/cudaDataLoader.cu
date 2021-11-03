@@ -45,10 +45,10 @@ int LoadData(int arg) {
 	}
 	
 	try {
-		h_edgeIndex = (float*) calloc(featureSize*edgeIndexSize, sizeof(float));
+		h_edgeIndex = (float*) calloc(2*edgeIndexSize, sizeof(float));
 		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
-		cudaMalloc( (void**) &edgeIndex, featureSize*edgeIndexSize * sizeof(float));
-		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)featureSize*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
+		cudaMalloc( (void**) &edgeIndex, 2*edgeIndexSize * sizeof(float));
+		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)2*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
 		
 	} catch(...) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
@@ -135,7 +135,13 @@ int LoadData(int arg) {
 
 	} // CU_SpMM_GCN end
 
+	std::cout << "edge index matrix:\n";
+	printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
+	std::cout << std::endl;
+
+	std::cout << "feature matrix:\n";
 	printDenseMatrix(h_featureVector, featureSize, numOfNodes);
+	std::cout << std::endl;
 
 	cudaFree(edgeIndex);
 	cudaFree(featureVector);
@@ -143,10 +149,10 @@ int LoadData(int arg) {
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
 
-	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
-	//for( const std::pair<int,int>& n : nodeMap ) {
-	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	//}
+	std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+	for( const std::pair<int,int>& n : nodeMap ) {
+		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	}
 
 	return 0;
 }
