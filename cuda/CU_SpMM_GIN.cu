@@ -20,9 +20,9 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
         
 
 	// create identity matrix I here
-	float *d_I, *d_A, *d_AIX, *d_X;
+	float *d_I, *d_A, *d_AI, *d_AIX, *d_X;
 	cudaMalloc(&d_I,n_nodes * n_nodes * sizeof(float));
-	initIdentityGPU<<<16,1024>>>(&d_I, n_nodes, n_nodes);
+	//initIdentityGPU<<<16,1024>>>(&d_I, n_nodes, n_nodes);
         
         // ----- calculation of (1+e)*I ----- //
 	//for(int i=0; i<n_nodes; i++) {
@@ -31,8 +31,8 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	printf("I matrix:\n");
 	float* I = (float*)calloc(n_nodes * n_nodes, sizeof(float));
-	//cudaMemcpy(I,d_I,n_nodes * n_nodes * sizeof(float), cudaMemcpyDeviceToHost);
 	initIdentityMatrix(I, n_nodes, n_nodes);
+	cudaMemcpy(d_I,I,n_nodes * n_nodes * sizeof(float), cudaMemcpyHostToDevice);
 	printDenseMatrix(I, n_nodes, n_nodes);
 
 	printf("A matrix:\n");
@@ -45,6 +45,7 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	cudaMemcpy(d_A,adjMatrix,n_nodes * n_nodes * sizeof(float),cudaMemcpyHostToDevice);
 
 	// ----- calculation of A + (1+e)*I ----- //
+	cudaMalloc(&d_AI, n_nodes * n_features * sizeof(float));
 	gpu_blas_mmul(d_I, d_A, d_I, n_nodes, n_nodes, n_nodes, false, false, 1.0, (1.0 + epsilon));
 	cudaFree(d_A);
 
