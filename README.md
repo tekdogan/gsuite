@@ -9,7 +9,7 @@
 
 ### :boom: Compilation (for direct use)
 _in cuda dir, compile codes using the command line below_    
-`nvcc -lcublas -std=c++11 -arch=compute_61 cuBlasUtil.cu Data_Util.cu CU_GCN_MP.cu CU_SpMM_GCN.cu cudaDataLoader.cu main.cpp -o cudaDataLoader.o`  
+`nvcc -lcublas -std=c++11 -arch=compute_61 cuBlasUtil.cu Data_Util.cu CU_GCN_MP.cu CU_SpMM_GCN.cu CU_SAG_WL.cu cudaDataLoader.cu main.cpp -o cudaDataLoader.o`  
 
 _then call executable with a parameter_  
 `./cudaDataLoader.o 2`
