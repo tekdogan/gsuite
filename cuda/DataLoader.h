@@ -10,6 +10,7 @@
 #include<cublas_v2.h>
 #include"CU_SpMM_GCN.h"
 #include"CU_SpMM_GIN.h"
+#include"CU_SAG_WL.h"
 #include"Data_Util.h"
 #include<unordered_map>
 

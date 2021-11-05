@@ -135,6 +135,21 @@ int LoadData(int arg) {
 
 	} // CU_SpMM_GCN end
 
+	else if(arg == 3) { // execute CU_WL::SAG
+
+	float* outputFeatureMatrix;
+	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
+
+	CU_WL::SAGLayer<<<16,1024>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+
+	float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
+	cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
+
+	std::cout << "Output feature matrix:\n";
+	printDenseMatrix(h_outputFeatureMatrix, featureSize, numOfNodes);
+
+	} // CU_WL::SAG end
+
 	std::cout << "edge index matrix:\n";
 	printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
 	std::cout << std::endl;

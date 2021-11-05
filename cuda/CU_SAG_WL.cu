@@ -13,11 +13,13 @@ namespace CU_WL {
 __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* outputFeatureMatrix) {
 
 	int i = threadIdx.x;
+	printf("thread %d\n",i);
 	if(i < numOfNodes) {
 	    
-	            // temporary feature values variable used during
+	        // temporary feature values variable used during
                 // the calculation of mean values of incoming edges
-                float* tempFeatureValues = (float*)calloc(numOfFeatures, sizeof(float));
+                float* tempFeatureValues;
+		cudaMalloc(&tempFeatureValues, numOfFeatures * sizeof(float));
                         
                 // number of incoming edges to i
                 int tempIncomingEdges = 0;
@@ -29,7 +31,7 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
                                 
                                 // add xj values to sum
                                 for(int k=0; k<numOfFeatures; k++) {
-                                        *(tempFeatureValues + k) += *(featureTensor + (*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
+                                        *(tempFeatureValues + k) += *(featureTensor + ((int)*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
                                 }
                                 
                                 // increment number of incoming edges to node i
@@ -38,11 +40,15 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
                 }
                 
                 // calculate new values of node features of i
-                
-                *(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges));
+                for(int k=0; k<numOfFeatures; k++) {
+			*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges));
+			printf("calculated value of node %d feature %d is %f\n",i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges)) );
+		}
+		cudaFree(tempFeatureValues);
         }
 
 
 }
 
 } // namespace end
+
