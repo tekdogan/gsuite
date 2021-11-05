@@ -6,8 +6,22 @@
 extern "C" {
 #endif
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
+
+
 int LoadData(int arg) {
 
+
+	gpuErrchk( cudaPeekAtLastError() );
+	gpuErrchk( cudaDeviceSynchronize() );
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
 
@@ -140,7 +154,7 @@ int LoadData(int arg) {
 	float* outputFeatureMatrix;
 	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
 
-	CU_WL::SAGLayer<<<16,1024>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<16,SIZE>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
 
 	float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
 	cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
