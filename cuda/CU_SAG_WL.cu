@@ -10,22 +10,21 @@
 
 namespace CU_WL {
 
-__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* outputFeatureMatrix) {
+__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* tempFeatureValues, float* outputFeatureMatrix) {
 
-	printf("thread\n");
 	int i = threadIdx.x;
-	printf("thread %d\n",i);
+	//printf("thread %d\n",i);
 	if(i < numOfNodes) {
 	    
 	        // temporary feature values variable used during
                 // the calculation of mean values of incoming edges
-                float* tempFeatureValues;
-		cudaMalloc(&tempFeatureValues, numOfFeatures * sizeof(float));
+                //float* tempFeatureValues;
+		//cudaMalloc(&tempFeatureValues, numOfFeatures * sizeof(float));
                         
                 // number of incoming edges to i
                 int tempIncomingEdges = 0;
-	    
-	            // scan through edge indices
+	        //printf("DEBUG: CU_WL::SAGLayer first part starting...\n");
+	        // scan through edge indices
                 for(int j=0; j<numOfEdges; j++) {
                 
                         if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
@@ -39,13 +38,17 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
                                 tempIncomingEdges++;
                         }
                 }
-                
+                printf("DEBUG: CU_WL::SAGLayer THREAD:%d first part successful!\n", i);
+
+		printf("DEBUG: numOfFeatures is %d\n", numOfFeatures);
                 // calculate new values of node features of i
                 for(int k=0; k<numOfFeatures; k++) {
 			*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges));
-			printf("calculated value of node %d feature %d is %f\n",i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges)) );
+			//printf("DEBUG: CU_WL::SAGLayer inside the aggregation part.\n");
+			//printf("DEBUG: CU_WL::SAGLayer THREAD:%d calculated value of node %d feature %d is %f\n",i,i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges)) );
 		}
-		cudaFree(tempFeatureValues);
+		//cudaFree(tempFeatureValues);
+		
         }
 
 

@@ -20,8 +20,8 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 int LoadData(int arg) {
 
 
-	gpuErrchk( cudaPeekAtLastError() );
-	gpuErrchk( cudaDeviceSynchronize() );
+	//gpuErrchk( cudaPeekAtLastError() );
+	//gpuErrchk( cudaDeviceSynchronize() );
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
 
@@ -151,10 +151,11 @@ int LoadData(int arg) {
 
 	else if(arg == 3) { // execute CU_WL::SAG
 
-	float* outputFeatureMatrix;
+	float* outputFeatureMatrix, *tempFeatureValues;
 	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
+	cudaMalloc(&tempFeatureValues, featureSize * sizeof(float));
 
-	CU_WL::SAGLayer<<<16,SIZE>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<16,64>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 
 	float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
 	cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
