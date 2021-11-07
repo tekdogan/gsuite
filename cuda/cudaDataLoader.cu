@@ -38,11 +38,11 @@ int LoadData(int arg) {
 	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites";
+	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content";
+	const char* featureFileName = "cora.content.bak2";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -153,25 +153,29 @@ int LoadData(int arg) {
 
 	float* outputFeatureMatrix, *tempFeatureValues;
 	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
-	cudaMalloc(&tempFeatureValues, featureSize * sizeof(float));
+	cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
 
-	CU_WL::SAGLayer<<<16,64>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	auto start = std::chrono::steady_clock::now();
+	CU_WL::SAGLayer<<<16,SIZE>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	auto end = std::chrono::steady_clock::now();
+	std::chrono::duration<double, std::milli> dur_ms = end-start;
+	std::cout << "1-layer CU_WL::SAG execution took " << dur_ms.count() << " ms\n";
 
 	float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
 	cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
 
-	std::cout << "Output feature matrix:\n";
-	printDenseMatrix(h_outputFeatureMatrix, featureSize, numOfNodes);
+	//std::cout << "Output feature matrix:\n";
+	//printDenseMatrix(h_outputFeatureMatrix, featureSize, numOfNodes);
 
 	} // CU_WL::SAG end
 
-	std::cout << "edge index matrix:\n";
-	printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
-	std::cout << std::endl;
+	//std::cout << "edge index matrix:\n";
+	//printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
+	//std::cout << std::endl;
 
-	std::cout << "feature matrix:\n";
-	printDenseMatrix(h_featureVector, featureSize, numOfNodes);
-	std::cout << std::endl;
+	//std::cout << "feature matrix:\n";
+	//printDenseMatrix(h_featureVector, featureSize, numOfNodes);
+	//std::cout << std::endl;
 
 	cudaFree(edgeIndex);
 	cudaFree(featureVector);
@@ -179,10 +183,10 @@ int LoadData(int arg) {
 	cudaFree(aggregationVar);
 	cudaFree(nodeDegrees);
 
-	std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
-	for( const std::pair<int,int>& n : nodeMap ) {
-		std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
-	}
+	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+	//for( const std::pair<int,int>& n : nodeMap ) {
+	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
+	//}
 
 	return 0;
 }

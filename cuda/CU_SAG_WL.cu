@@ -31,21 +31,21 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
                                 
                                 // add xj values to sum
                                 for(int k=0; k<numOfFeatures; k++) {
-                                        *(tempFeatureValues + k) += *(featureTensor + ((int)*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
+                                        *(tempFeatureValues + i*numOfNodes + k) += *(featureTensor + ((int)*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
                                 }
                                 
                                 // increment number of incoming edges to node i
                                 tempIncomingEdges++;
                         }
                 }
-                printf("DEBUG: CU_WL::SAGLayer THREAD:%d first part successful!\n", i);
+                //printf("DEBUG: CU_WL::SAGLayer THREAD:%d first part successful!\n", i);
 
-		printf("DEBUG: numOfFeatures is %d\n", numOfFeatures);
+		//printf("DEBUG: numOfFeatures is %d\n", numOfFeatures);
                 // calculate new values of node features of i
                 for(int k=0; k<numOfFeatures; k++) {
-			*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(featureTensor + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges));
+			*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(featureTensor + i*numOfFeatures + k)) + (w2 * (*(tempFeatureValues + i*numOfNodes + k)/tempIncomingEdges));
 			//printf("DEBUG: CU_WL::SAGLayer inside the aggregation part.\n");
-			//printf("DEBUG: CU_WL::SAGLayer THREAD:%d calculated value of node %d feature %d is %f\n",i,i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (tempFeatureValues[k]/tempIncomingEdges)) );
+			//printf("DEBUG: CU_WL::SAGLayer THREAD:%d calculated value of node %d feature %d is %f\n",i,i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (*(tempFeatureValues + i*numOfNodes + k)/tempIncomingEdges)) );
 		}
 		//cudaFree(tempFeatureValues);
 		
