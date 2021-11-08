@@ -46,10 +46,10 @@ __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggre
                                 }
                         }
                 }
-                *(featureTensor + numOfFeatures*i) = aggregationVar[0];
-                *(featureTensor + numOfFeatures*i + 1) = aggregationVar[1];
-                aggregationVar[0] = 0.0;
-                aggregationVar[1] = 0.0;
+                *(featureTensor + numOfFeatures*i) = *(aggregationVar + i*numOfFeatures);
+                *(featureTensor + numOfFeatures*i + 1) = *(aggregationVar + i*numOfFeatures + 1);
+                *(aggregationVar + i*numOfFeatures) = 0.0;
+                *(aggregationVar + i*numOfFeatures + 1) = 0.0;
         }
 
 

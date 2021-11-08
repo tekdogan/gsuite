@@ -25,24 +25,24 @@ int LoadData(int arg) {
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
 
-	float h_aggregationVar[2] = {0,0};
+	float h_aggregationVar[9] = {0};
 	float h_nodeDegrees[3] = {1,2,1};
 
 	float aggregationVar[2], nodeDegrees[3];
 
 	std::unordered_map<int,int> nodeMap;
 
-	cudaMalloc( (void**) &aggregationVar, 2 * sizeof(float));
-	cudaMemcpy(aggregationVar, h_aggregationVar, 2*sizeof(float), cudaMemcpyHostToDevice);
+	cudaMalloc( (void**) &aggregationVar, 9 * sizeof(float));
+	cudaMemcpy(aggregationVar, h_aggregationVar, 9 * sizeof(float), cudaMemcpyHostToDevice);
 
 	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
-	const char* edgeIndexFileName = "cora.cites.bak2";
+	const char* edgeIndexFileName = "cora.cites";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content.bak2";
+	const char* featureFileName = "cora.content";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -72,9 +72,9 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 
-	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+	CU_MP::GCNLayerNew<<<1,numOfNodes>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
-	CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	auto end = std::chrono::steady_clock::now();
 
