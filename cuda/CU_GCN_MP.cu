@@ -4,11 +4,11 @@
 #include<omp.h>
 #include<cuda.h>
 
-#define DIRECTED_EDGES 4
+//#define DIRECTED_EDGES 4
 
-#define NUM_NODES 3
+//#define NUM_NODES 3
 
-#define FEATURE_LEN 3
+//#define FEATURE_LEN 3
 
 
 namespace CU_MP {
@@ -33,21 +33,21 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float* aggregationVar, flo
 */
 }
 
-__global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees) {
+__global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees, int numOfNodes, int numOfFeatures, int numOfEdges) {
 
 	int i = threadIdx.x;
-	if(i < NUM_NODES) {
-                for(int j=0; j<DIRECTED_EDGES; j++) {
+	if(i < numOfNodes) {
+                for(int j=0; j<numOfEdges; j++) {
                         if((*(edgeIndex + j)) == (float)i) {// if there is an edge incoming to node i
                                 // aggregate edgeIndex[1][j] features on node i
                                 //std::cout << "from node " << edgeIndex[1][j] << " to node " << i << std::endl;
-                                for(int k=0; k<FEATURE_LEN; k++) {
-                                        aggregationVar[k] += *(featureTensor + i*FEATURE_LEN + k) * 1.0/sqrt(nodeDegrees[i]*nodeDegrees[(int)(*(edgeIndex + 1*DIRECTED_EDGES + j))]);
+                                for(int k=0; k<numOfFeatures; k++) {
+                                        *(aggregationVar + i*numOfFeatures + k) += *(featureTensor + i*numOfFeatures + k) * 1.0/sqrt(nodeDegrees[i]*nodeDegrees[(int)(*(edgeIndex + 1*numOfEdges + j))]);
                                 }
                         }
                 }
-                *(featureTensor + FEATURE_LEN*i) = aggregationVar[0];
-                *(featureTensor + FEATURE_LEN*i + 1) = aggregationVar[1];
+                *(featureTensor + numOfFeatures*i) = aggregationVar[0];
+                *(featureTensor + numOfFeatures*i + 1) = aggregationVar[1];
                 aggregationVar[0] = 0.0;
                 aggregationVar[1] = 0.0;
         }
