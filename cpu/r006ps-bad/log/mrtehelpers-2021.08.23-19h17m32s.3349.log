@@ -1,0 +1,7 @@
+88 [140331212678912] INFO mrtehelpers.mrteenv <> - Product libs directory: /home/taha/intel/oneapi/vtune/2021.6.0/lib64
+88 [140331212678912] INFO mrtehelpers.mrteenv <> - File mask: amplxe_tpssmrte_clrprof*
+103 [140331212678912] INFO mrtehelpers.mrteenv <> - File name: lib
+103 [140331212678912] INFO mrtehelpers.mrteenv <> - File mask: amplxe_tpssmrte_clrprof*
+112 [140331212678912] INFO mrtehelpers.mrteenv <> - File name: lib
+112 [140331212678912] ERROR mrtehelpers.mrteenv <> - Failed to init shared librarylib located at /home/taha/intel/oneapi/vtune/2021.6.0/lib64, at file: vcs/mrtehelpers3/src/mrteenv/mrte_profiling_initializer.cpp:485
+112 [140331212678912] ERROR mrtehelpers.mrteenv <> - CLR support is disabled because profiler GUID is empty, at file: vcs/mrtehelpers3/src/mrteenv/mrte_profiling_initializer.cpp:308

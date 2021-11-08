@@ -1,0 +1,15 @@
+-r
+/home/taha/benchmark/bm_files/gcnPractise/cpu/r003ps
+--stack-stitching
+--data-limit-mb=1000
+--disk-space-limit=0
+--mrte-type=java
+--stack-unwind-limit=8388608
+--itt-config=frame
+--stackwalk=offline
+--mrte-mode=auto
+--type=cpu:counters:nostack
+--type=cpu:nostack
+--interval=100
+--
+DataLoader.o

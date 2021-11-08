@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+ <rdmgr>
+  <timestamp type="u64_t">1629731390</timestamp>
+  <hostname type="string">erciyes</hostname>
+  <os type="string">linux</os>
+  <product type="string">Intel® oneAPI VTune™ Profiler 2021.6.0</product>
+  <buildNumber type="s32_t">618723</buildNumber>
+  <logicalCPUCount type="s32_t">32</logicalCPUCount>
+  <physicalCoreCount type="s32_t">16</physicalCoreCount>
+  <processorPackageCount type="s32_t">2</processorPackageCount>
+  <CPUFrequency type="s64_t">801000000</CPUFrequency>
+  <CPUFamily type="s32_t">6</CPUFamily>
+  <CPUModel type="s32_t">85</CPUModel>
+  <CPUStepping type="s32_t">4</CPUStepping>
+  <CPUBrandName type="string">Intel(R) Xeon(R) Silver 4110 CPU @ 2.10GHz</CPUBrandName>
+  <isa type="string">avx512</isa>
+  <collectionTimeBegin type="u64_t">1629731390</collectionTimeBegin>
+  <collectionTimeEnd type="u64_t">1629731391</collectionTimeEnd>
+  <variables>
+   <at type="string">ps</at>
+  </variables>
+ </rdmgr>
+</root>

@@ -1,0 +1,68 @@
+11 [139885712369472] INFO perfrun.launcher <> - Launcher main begin
+12 [139885712369472] INFO perfrun.launcher <> - MessageCatalogInit finished
+12 [139885712369472] INFO perfrun.launcher <> - Launcher instance created
+12 [139885712369472] INFO perfrun.launcher <> - argc = 7; cmdline = /home/taha/intel/oneapi/vtune/2021.6.0/bin64/amplxe-runss --ui-output-format xml --ui-output-fd 5 --option-file /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/config/runss.options 
+61 [139885712369472] INFO perfrun.launcher <> - create msngr2::ICliToolContext
+61 [139885712369472] INFO perfrun.launcher <> - create file finder object
+61 [139885712369472] INFO perfrun.launcher <> - create a result directory: pattern = /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs pid = 4294967295
+63 [139885712369472] INFO perfrun.sdk <> - checked that the directory /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs is a local directory
+63 [139885712369472] INFO perfrun.sdk <> - the directory /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs is a local directory with FS type ID 61267
+63 [139885712369472] INFO perfrun.launcher <> - create data directory = /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/data.0
+63 [139885712369472] INFO perfrun.launcher <> - Creating the master collection flag
+68 [139885712369472] INFO perfrun.launcher <> - Done creating the master collection flag
+82 [139885581571840] INFO perfrun.launcher <> - plugin [remoteplug] was disabled because it doesn't support the given collection type.
+83 [139885581571840] INFO perfrun.sdk <> - Allocating TMU :/home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/data.0/systemcollector-3164-erciyes.sc
+83 [139885581571840] INFO perfrun.system <> - Tpss based collection
+83 [139885581571840] INFO perfrun.launcher <> - plugin [ptracecollector] was disabled because it doesn't support the given collection type.
+84 [139885581571840] INFO perfrun.launcher <> - plugin [gpu] was disabled because it doesn't support the given collection type.
+84 [139885581571840] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+84 [139885581571840] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+84 [139885581571840] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+84 [139885581571840] INFO perfrun.mrte <> - system-wide mode is 0
+84 [139885581571840] INFO perfrun.mrte <> - Getting  mrte profiling environment ...
+109 [139885581571840] INFO perfrun.mrte <> - INTEL_MRTE_DATA_DIR=/home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/data.0
+109 [139885581571840] INFO perfrun.mrte <> - INTEL_MRTE_HOST_NAME=erciyes
+109 [139885581571840] INFO perfrun.mrte <> - JAVA_TOOL_OPTIONS=-agentlib:amplxe_tpssmrte_javaprof_1.0 -Dsun.boot.library.path=/home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime:/home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime
+109 [139885581571840] INFO perfrun.mrte <> - Data directory: /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/data.0
+109 [139885581571840] INFO perfrun.mrte <> - Mrte plugin is initialized
+109 [139885581571840] INFO perfrun.launcher <> - plugin [emon] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [cuscol] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [stdsrc] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [sep] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [vtsspp] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [perf] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [aoclprofile] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.tpss <> - initialize tpss controller
+109 [139885581571840] INFO perfrun.tpss <> - configure collection mode: value = cpu:counters:nostack
+109 [139885581571840] INFO perfrun.tpss <> - configure collection mode: value = cpu:stack
+109 [139885581571840] INFO perfrun.tpss <> - default obj-size-min=1024
+109 [139885581571840] INFO perfrun.tpss <> - default hash-table-size=0
+109 [139885581571840] INFO perfrun.launcher <> - plugin [exprof] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [media] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [parallelfs] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [power] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [hwloc] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [ipmwatch] was disabled because it doesn't support the given collection type.
+109 [139885581571840] INFO perfrun.launcher <> - plugin [os_counters] was disabled because it doesn't support the given collection type.
+109 [139885712369472] INFO perfrun.launcher <> - set environment variable: LD_LIBRARY_PATH = /home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime:/home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime
+109 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY32 = /home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime/libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_LIBITTNOTIFY64 = /home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime/libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_ITTNOTIFY_GROUPS = 
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER32 = /home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime/libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_JIT_PROFILER64 = /home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime/libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: VS_PROFILER = libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: OMP_TOOL_LIBRARIES = /home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime/libittnotify_collector.so:/home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime/libittnotify_collector.so
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: ENABLE_JITPROFILING = 1
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: CL_CONFIG_USE_VTUNE = True
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: KMP_FORKJOIN_FRAMES = 0
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: KMP_FORKJOIN_FRAMES_MODE = 0
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: OMP_TOOL = disabled
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_DATA_DIR = /home/taha/benchmark/bm_files/gcnPractise/cpu/r001hs/data.0
+110 [139885712369472] INFO perfrun.launcher <> - set environment variable: INTEL_MRTE_HOST_NAME = erciyes
+111 [139885712369472] INFO perfrun.launcher <> - set environment variable: JAVA_TOOL_OPTIONS = -agentlib:amplxe_tpssmrte_javaprof_1.0 -Dsun.boot.library.path=/home/taha/intel/oneapi/vtune/2021.6.0/lib32/runtime:/home/taha/intel/oneapi/vtune/2021.6.0/lib64/runtime
+111 [139885712369472] INFO perfrun.launcher <> - RpcServer: run RPC server to handle requests
+111 [139885712369472] ERROR perfrun.launcher <> - Messenger::say: Binary `DataLoader.o' cannot be executed. Suggestion: Make sure the file exists, specified location is correct, and you have privileges to run the file.
+112 [139885712369472] INFO perfrun.launcher <> - Application exit code: 0
+112 [139885712369472] INFO perfrun.launcher <> - Exit code: 1
