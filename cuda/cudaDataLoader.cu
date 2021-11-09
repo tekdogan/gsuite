@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+float h_aggregationVar[9] = {0};
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 {
@@ -25,18 +25,7 @@ int LoadData(int arg) {
 	float *h_edgeIndex, *h_featureVector;
 	float *edgeIndex, *featureVector;
 
-	float h_aggregationVar[9] = {0};
-	float h_nodeDegrees[3] = {1,2,1};
-
-	float aggregationVar[2], nodeDegrees[3];
-
 	std::unordered_map<int,int> nodeMap;
-
-	cudaMalloc( (void**) &aggregationVar, 9 * sizeof(float));
-	cudaMemcpy(aggregationVar, h_aggregationVar, 9 * sizeof(float), cudaMemcpyHostToDevice);
-
-	cudaMalloc( (void**) &nodeDegrees, 3*sizeof(float));
-	cudaMemcpy(nodeDegrees, h_nodeDegrees, 3*sizeof(float), cudaMemcpyHostToDevice);
 
 	const char* edgeIndexFileName = "cora.cites";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
@@ -67,6 +56,20 @@ int LoadData(int arg) {
 	} catch(...) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
+
+        float *h_aggregationVar, *h_nodeDegrees;
+        float *aggregationVar, *nodeDegrees;
+
+	for(int i=0; i<edgeIndexSize; i++) {
+		std::cout << "#" << (int)(*(h_edgeIndex + i)) << std::endl;
+		h_nodeDegrees[(int)(*(h_edgeIndex + i))]++;
+	}
+
+	cudaMalloc( (void**) &aggregationVar, numOfNodes * featureSize * sizeof(float));
+	cudaMemcpy(aggregationVar, h_aggregationVar, numOfNodes * featureSize * sizeof(float), cudaMemcpyHostToDevice);
+
+	cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
+	cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
 
 	if(arg == 0) { // execute CU_MP_GCN
 
