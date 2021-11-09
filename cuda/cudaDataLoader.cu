@@ -27,11 +27,11 @@ int LoadData(int arg) {
 
 	std::unordered_map<int,int> nodeMap;
 
-	const char* edgeIndexFileName = "cora.cites";
+	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content";
+	const char* featureFileName = "cora.content.bak2";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -57,12 +57,16 @@ int LoadData(int arg) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
 
-        float *h_aggregationVar, *h_nodeDegrees;
+        float *h_aggregationVar = (float*)calloc(numOfNodes * featureSize, sizeof(float));
+	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
         float *aggregationVar, *nodeDegrees;
 
 	for(int i=0; i<edgeIndexSize; i++) {
-		std::cout << "#" << (int)(*(h_edgeIndex + i)) << std::endl;
 		h_nodeDegrees[(int)(*(h_edgeIndex + i))]++;
+	}
+
+	for(int i=0; i<numOfNodes*featureSize; i++) {
+		*(h_aggregationVar + i) = 0.0;
 	}
 
 	cudaMalloc( (void**) &aggregationVar, numOfNodes * featureSize * sizeof(float));
@@ -75,9 +79,13 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 
-	CU_MP::GCNLayerNew<<<1,numOfNodes>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+	cudaProfilerStart();
+
+	CU_MP::GCNLayerNew<<<16,numOfNodes>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+
+	cudaProfilerStop();
 
 	auto end = std::chrono::steady_clock::now();
 
@@ -91,7 +99,7 @@ int LoadData(int arg) {
 
 	} // CU_MP_GCN end
 
-	else if(arg == 1) { // execute C_MP_GIN
+	else if(arg == 1) { // execute CU_SpMM::GIN
 
 	float *featureVectorOutput;
 	cudaMalloc( (void**) &featureVectorOutput, numOfNodes*featureSize * sizeof(float));
@@ -104,7 +112,9 @@ int LoadData(int arg) {
 	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 
         auto start = std::chrono::steady_clock::now();
+	cudaProfilerStart();
         CU_SpMM::GINLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix, 0.1);
+	cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
@@ -114,7 +124,7 @@ int LoadData(int arg) {
         //        std::cout << "Node" << i << " feature 1: " << *(featureVectorOutput + featureSize*i + 1) << std::endl;
         //}
 
-	} // C_MP_GIN end
+	} // CU_SpMM::GIN end
 
 	else if(arg == 2) { // execute CU_SpMM_GCN
 
@@ -136,7 +146,9 @@ int LoadData(int arg) {
 
 	std::cout << "DEBUG: CU_SpMM::GCN start...\n";
 	auto start = std::chrono::steady_clock::now();
+	cudaProfilerStart();
 	CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
+	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer CU_SpMM::GCN execution took " << dur_ms.count() << " ms\n";
@@ -159,7 +171,9 @@ int LoadData(int arg) {
 	cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
 
 	auto start = std::chrono::steady_clock::now();
-	CU_WL::SAGLayer<<<16,SIZE>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	cudaProfilerStart();
+	CU_WL::SAGLayer<<<16,numOfNodes>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
 	std::cout << "1-layer CU_WL::SAG execution took " << dur_ms.count() << " ms\n";
