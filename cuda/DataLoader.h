@@ -5,7 +5,7 @@
 #include<chrono>
 #include<cstdlib>
 #include"C_GCN_MP.h"
-#include"C_GIN_WL.h"
+#include"CU_GIN_WL.h"
 #include<cuda.h>
 #include<cublas_v2.h>
 #include"CU_SpMM_GCN.h"
