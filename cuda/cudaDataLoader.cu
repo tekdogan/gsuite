@@ -175,6 +175,25 @@ int LoadData(int arg) {
 
 	} // CU_WL::SAG end
 
+	else if(arg == 4) { // execute CU_WL::GIN
+
+        float* outputFeatureMatrix, *tempFeatureValues;
+        cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));
+        cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
+
+        auto start = std::chrono::steady_clock::now();
+        cudaProfilerStart();
+        CU_WL::GINLayer<<<16,numOfNodes>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        cudaProfilerStop();
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double, std::milli> dur_ms = end-start;
+        std::cout << "1-layer CU_WL::GIN execution took " << dur_ms.count() << " ms\n";
+
+        float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
+        cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
+
+	}
+
 	//std::cout << "edge index matrix:\n";
 	//printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
 	//std::cout << std::endl;
