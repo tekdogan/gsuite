@@ -61,10 +61,9 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 
 	// copy the result to output
 	cudaMemcpy(output, d_AIX, n_nodes * n_features * sizeof(float), cudaMemcpyDeviceToHost);
-	memcpy(output, d_AIX, sizeof(float)*(n_nodes*n_features));
 
-	//printf("DADX matrix:\n");
-	//printDenseMatrix(DADX, n_nodes, n_features);
+	//printf("AIX matrix:\n");
+	//printDenseMatrix(output, n_nodes, n_features);
 
 	cudaFree(d_AIX);
 //    }
