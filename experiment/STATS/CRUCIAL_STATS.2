@@ -1,0 +1,137 @@
+gpu_sim_cycle = 1935
+gpu_sim_insn = 14564
+gpu_ipc =       7.5266
+gpu_tot_sim_cycle = 5805
+gpu_tot_sim_insn = 43692
+gpu_tot_ipc =       7.5266
+gpu_tot_issued_cta = 3
+gpu_occupancy = 5.9259% 
+gpu_tot_occupancy = 5.9259% 
+
+========= Core cache stats =========
+L1I_cache:
+	L1I_total_cache_accesses = 0
+	L1I_total_cache_misses = 0
+	L1I_total_cache_pending_hits = 0
+	L1I_total_cache_reservation_fails = 0
+L1D_cache:
+	L1D_total_cache_accesses = 42
+	L1D_total_cache_misses = 30
+	L1D_total_cache_miss_rate = 0.7143
+	L1D_total_cache_pending_hits = 0
+	L1D_total_cache_reservation_fails = 0
+	L1D_cache_data_port_util = 0.002
+	L1D_cache_fill_port_util = 0.002
+L1C_cache:
+	L1C_total_cache_accesses = 0
+	L1C_total_cache_misses = 0
+	L1C_total_cache_pending_hits = 0
+	L1C_total_cache_reservation_fails = 0
+L1T_cache:
+	L1T_total_cache_accesses = 0
+	L1T_total_cache_misses = 0
+	L1T_total_cache_pending_hits = 0
+	L1T_total_cache_reservation_fails = 0
+gpgpu_n_tot_thrd_icount = 68256
+gpgpu_n_tot_w_icount = 2133
+gpgpu_n_stall_shd_mem = 6
+gpgpu_n_mem_read_local = 0
+gpgpu_n_mem_write_local = 0
+gpgpu_n_mem_read_global = 12
+gpgpu_n_mem_write_global = 12
+gpgpu_n_mem_texture = 0
+gpgpu_n_mem_const = 0
+gpgpu_n_load_insn  = 54
+gpgpu_n_store_insn = 27
+gpgpu_n_shmem_insn = 1422
+gpgpu_n_sstarr_insn = 0
+gpgpu_n_tex_insn = 0
+gpgpu_n_const_mem_insn = 0
+gpgpu_n_param_mem_insn = 4224
+gpgpu_n_shmem_bkconflict = 0
+gpgpu_n_cache_bkconflict = 0
+gpgpu_n_intrawarp_mshr_merge = 0
+gpgpu_n_cmem_portconflict = 0
+gpgpu_stall_shd_mem[c_mem][resource_stall] = 0
+gpgpu_stall_shd_mem[s_mem][bk_conf] = 0
+gpgpu_stall_shd_mem[gl_mem][resource_stall] = 6
+gpgpu_stall_shd_mem[gl_mem][coal_stall] = 0
+gpgpu_stall_shd_mem[gl_mem][data_port_stall] = 0
+gpu_reg_bank_conflict_stalls = 0
+Warp Occupancy Distribution:
+Stall:273	W0_Idle:10848	W0_Scoreboard:9954	W1:51	W2:51	W3:615	W4:0	W5:0	W6:0	W7:0	W8:0	W9:0	W10:0	W11:0	W12:0	W13:0	W14:0	W15:0	W16:0	W17:0	W18:0	W19:0	W20:0	W21:0	W22:0	W23:0	W24:0	W25:0	W26:0	W27:0	W28:0	W29:0	W30:0	W31:0	W32:1416
+single_issue_nums: WS0:768	WS1:354	WS2:657	WS3:354	
+dual_issue_nums: WS0:0	WS1:0	WS2:0	WS3:0	
+scalar instruction: 0.748711, vector instruction: 0.251289
+@!%p24: 6
+@!%p29: 6
+@!%p3: 12
+@!%p32: 21
+@%p10: 12
+@%p11: 12
+@%p12: 12
+@%p13: 12
+@%p14: 12
+@%p15: 6
+@%p17: 6
+@%p18: 9
+@%p19: 12
+@%p20: 12
+@%p25: 6
+@%p30: 3
+@%p31: 12
+@%p5: 12
+@%p6: 24
+@%p8: 12
+@%p9: 12
+add.f32: 14
+add.s32: 183
+add.s64: 30
+and.pred: 12
+bar.sync: 48
+bra.uni: 72
+cvt.s64.s32%rd16,: 9
+cvt.u32.u64%r112,: 9
+cvta.to.global.u64: 12
+fma.rn.f32: 9
+ld.global.nc.f32: 9
+ld.param.f32: 24
+ld.param.u32: 12
+ld.param.u64: 60
+ld.param.v2.u32: 36
+ld.shared.f32: 27
+min.s32: 24
+mov.f32: 110
+mov.pred: 12
+mov.u32: 135
+mov.u64: 36
+mul.f32: 11
+mul.lo.s32: 108
+mul.wide.s32: 54
+or.pred: 12
+ret;: 12
+setp.eq.f32%p25,: 6
+setp.eq.f32%p30,: 3
+setp.eq.s32%p22,: 6
+setp.eq.s32%p32,: 12
+setp.eq.s32%p6,: 12
+setp.ge.s32%p10,: 12
+setp.ge.s32%p17,: 6
+setp.ge.s32%p9,: 12
+setp.lt.s32%p15,: 6
+setp.lt.s32%p18,: 9
+setp.lt.s32%p19,: 12
+setp.lt.s32%p31,: 12
+setp.lt.s32%p8,: 12
+setp.lt.u32%p5,: 12
+shl.b32: 36
+shr.s32: 12
+shr.u32: 24
+st.global.f32: 3
+st.shared.f32: 22
+st.shared.u32: 36
+sub.s32: 21
+traffic_breakdown_coretomem[GLOBAL_ACC_R] = 96 {8:12,}
+traffic_breakdown_coretomem[GLOBAL_ACC_W] = 480 {40:12,}
+traffic_breakdown_memtocore[GLOBAL_ACC_R] = 480 {40:12,}
+traffic_breakdown_memtocore[GLOBAL_ACC_W] = 96 {8:12,}
