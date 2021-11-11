@@ -31,5 +31,8 @@
 *.out
 *.app
 
+# NVProfiler
+.nvprof
+
 
 __pycache__/
