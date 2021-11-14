@@ -35,7 +35,7 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float* aggregationVar, flo
 
 __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees, int numOfNodes, int numOfFeatures, int numOfEdges) {
 
-	int i = threadIdx.x;
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
 	if(i < numOfNodes) {
                 for(int j=0; j<numOfEdges; j++) {
                         if((*(edgeIndex + j)) == (float)i) {// if there is an edge incoming to node i
