@@ -9,7 +9,7 @@ namespace CU_WL {
 __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float epsilon,
 			int numOfNodes, int numOfDirectedEdges, int numOfFeatures, float* outputFeatureMatrix) {
 
-    int i = threadIdx.x;
+    int i = threadIdx.x + blockIdx.x * blockDim.x;
     if(i < numOfNodes) {
                 for(int j=0; j<numOfDirectedEdges; j++) {
 			if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
