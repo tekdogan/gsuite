@@ -34,5 +34,11 @@
 # NVProfiler
 .nvprof
 
+# INI
+*.cfg
+
+# Pure Basic
+*.pb
+
 
 __pycache__/
