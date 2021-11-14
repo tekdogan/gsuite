@@ -12,7 +12,7 @@ namespace CU_WL {
 
 __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* tempFeatureValues, float* outputFeatureMatrix) {
 
-	int i = threadIdx.x;
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
 	//printf("thread %d\n",i);
 	if(i < numOfNodes) {
 	    
