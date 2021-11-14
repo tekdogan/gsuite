@@ -2,6 +2,8 @@
 
 #### :information_source: This repository incorporates the material about in-progress benchmark suite for Graph Neural Networks.
 
+[![CircleCI](https://circleci.com/gh/tekdogan/gcn/tree/master.svg?style=svg)](https://circleci.com/gh/tekdogan/gcn/tree/master)
+
 ### UI Parameters
 `--config`: (_mandatory_) local configuration file which includes default hyperparameters  
 `--gpu-id` : (_optional_) device id  
