@@ -1,6 +1,7 @@
 #include"DataLoader.h"
 
-#define SIZE 1024
+// number of threads per block
+#define TPB 512
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,7 +71,7 @@ int LoadData(int arg) {
 
 	cudaProfilerStart();
 
-	CU_MP::GCNLayerNew<<<16,numOfNodes>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+	CU_MP::GCNLayerNew<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
@@ -161,7 +162,7 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 	cudaProfilerStart();
-	CU_WL::SAGLayer<<<16,numOfNodes>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
@@ -183,7 +184,7 @@ int LoadData(int arg) {
 
         auto start = std::chrono::steady_clock::now();
         cudaProfilerStart();
-        CU_WL::GINLayer<<<16,numOfNodes>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        CU_WL::GINLayer<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
         cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
