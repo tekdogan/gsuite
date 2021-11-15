@@ -18,8 +18,8 @@ jobs:
       - run: export PATH=/usr/local/cuda-9.2/bin:$PATH
       - run: export CPATH=/usr/local/cuda-9.2/include:$CPATH
       - run: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/usr/local/cuda-9.2/lib64/
-      - run: nvidia-smi
-      - run: docker run --gpus all nvidia/cuda:9.2-base nvidia-smi
+      #- run: nvidia-smi
+      #- run: docker run --gpus all nvidia/cuda:9.2-base nvidia-smi
       - run:
           name: "run makefile"
           command: "cd cuda/ && make"
