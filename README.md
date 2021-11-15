@@ -2,7 +2,13 @@
 
 #### :information_source: This repository incorporates the material about in-progress benchmark suite for Graph Neural Networks.
 
-[![CircleCI](https://circleci.com/gh/tekdogan/gcn/tree/master.svg?style=svg)](https://circleci.com/gh/tekdogan/gcn/tree/master)
+<a href="https://github.com/tekdogan/gcn/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/tekdogan/gcn?style=plastic" /></a>
+
+<a href="https://circleci.com/gh/tekdogan/gcn/tree/master">
+        <img src="https://circleci.com/gh/tekdogan/gcn/tree/master.svg?style=badge" /></a>
+
+
 
 ### UI Parameters
 `--config`: (_mandatory_) local configuration file which includes default hyperparameters  
