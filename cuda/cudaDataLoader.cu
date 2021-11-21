@@ -1,7 +1,7 @@
 #include"DataLoader.h"
 
 // number of threads per block
-#define TPB 512
+#define TPB 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,6 +64,26 @@ int LoadData(int arg) {
 
 	cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
+
+
+	int *arr = (int*)calloc(2*edgeIndexSize, sizeof(int));
+
+	/*for(int i=0; i<8; i++) {
+	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
+	                *(arr + i) = (int)( *(h_edgeIndex + i));
+	}
+
+	gpu_qsort(arr, edgeIndexSize, edgeIndexSize);
+
+	for(int i=0; i<8; i++) {
+	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
+	                ( *(h_edgeIndex + i)) = (float)( *(arr + i));
+	}*/
+
+
+
+	//unordered_map<string, double>:: iterator itr;
+	//for (itr = umap.begin(); itr != umap.end(); itr++)
 
 	if(arg == 0) { // execute CU_MP_GCN
 
@@ -162,7 +182,8 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 	cudaProfilerStart();
-	CU_WL::SAGLayer<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<numOfNodes,1024>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
@@ -195,8 +216,12 @@ int LoadData(int arg) {
 
 	}
 
-	//std::cout << "edge index matrix:\n";
-	//printDenseMatrix(h_edgeIndex, edgeIndexSize, 2);
+	//std::cout << "edge index matrix before sort:\n";
+	//printDenseMatrix(h_edgeIndex, 2, edgeIndexSize);
+	//std::cout << std::endl;
+
+	//for(int i=0; i<edgeIndexSize*2; i++)
+	//	std::cout << "#" << *(h_edgeIndex+i);
 	//std::cout << std::endl;
 
 	//std::cout << "feature matrix:\n";
@@ -213,6 +238,25 @@ int LoadData(int arg) {
 	//for( const std::pair<int,int>& n : nodeMap ) {
 	//	std::cout << "Key:[" << n.first << "] Value:[" << n.second << "]\n";
 	//}
+
+	/*int *arr = (int*)calloc(2*edgeIndexSize, sizeof(int));
+
+	for(int i=0; i<8; i++) {
+			//std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
+			*(arr + i) = (int)( *(h_edgeIndex + i));
+	}
+
+	gpu_qsort(arr, 4, edgeIndexSize);
+
+	for(int i=0; i<8; i++) {
+	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
+	                ( *(h_edgeIndex + i)) = (float)( *(arr + i));
+	}*/
+
+	//std::cout << "edge index matrix after sort:\n";
+	//printDenseMatrix(h_edgeIndex, 2, edgeIndexSize);
+	//std::cout << std::endl;
+	
 
 	return 0;
 }
@@ -257,10 +301,38 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 		j++;
 		i = 0;
 		}
+		std::cout << "DEBUG: edgeIndex loaded! j=" << j << std::endl;
 	}
 	else {
 		std::cout << "Could not open the feature dataset file!\n";
 	}
+
+}
+
+void loadEdgeIndexFromFile2(const char* fileName, float* edgeIndex, const int numOfEdges,
+                           std::unordered_map<int, int> &nodeMap) {
+
+        std::ifstream dsFile(fileName);
+        std::string line;
+
+        int i=0, j=0;
+
+        if(dsFile.is_open()) {
+                while(getline(dsFile, line)) {
+                        std::istringstream ss(line);
+                        std::string word;
+                        while(std::getline(ss, word, '\t')) {
+                                *(edgeIndex + i + j) = nodeMap.find(std::stof(word))->second;
+                                i = 1;
+                        }
+                j++;
+                i = 0;
+                }
+                std::cout << "DEBUG: edgeIndex loaded! j=" << j << std::endl;
+        }
+        else {
+                std::cout << "Could not open the feature dataset file!\n";
+        }
 
 }
 

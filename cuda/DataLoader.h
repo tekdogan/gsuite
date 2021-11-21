@@ -13,7 +13,8 @@
 #include"CU_SAG_WL.h"
 #include"Data_Util.h"
 #include<unordered_map>
-#include <cuda_profiler_api.h>
+#include<cuda_profiler_api.h>
+#include"cuda_sort.h"
 
 extern "C" {
 
@@ -23,6 +24,8 @@ int LoadData(int);
 int getEdgeIndexSizeFromFile(const char* fileName);
 
 void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<int, int> &nodeMap);
+
+void loadEdgeIndexFromFile2(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<int, int> &nodeMap);
 
 int getFeatureSizeFromFile(const char* fileName);
 
