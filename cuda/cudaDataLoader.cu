@@ -182,7 +182,7 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 	cudaProfilerStart();
-	CU_WL::SAGLayer<<<numOfNodes,1024>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<numOfNodes,512>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
