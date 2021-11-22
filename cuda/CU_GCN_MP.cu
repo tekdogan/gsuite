@@ -35,22 +35,24 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float* aggregationVar, flo
 
 __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees, int numOfNodes, int numOfFeatures, int numOfEdges) {
 
-	int i = threadIdx.x + blockIdx.x * blockDim.x;
-	if(i < numOfNodes) {
-                for(int j=0; j<numOfEdges; j++) {
+	int i = threadIdx.x;
+	int j = blockIdx. x;
+	int k = j;
+	//if(i < numOfNodes) {
+                //for(int j=0; j<numOfEdges; j++) {
                         if((*(edgeIndex + j)) == (float)i) {// if there is an edge incoming to node i
                                 // aggregate edgeIndex[1][j] features on node i
                                 //std::cout << "from node " << edgeIndex[1][j] << " to node " << i << std::endl;
-                                for(int k=0; k<numOfFeatures; k++) {
+                                //for(int k=0; k<numOfFeatures; k++) {
                                         *(aggregationVar + i*numOfFeatures + k) += *(featureTensor + i*numOfFeatures + k) * 1.0/sqrt(nodeDegrees[i]*nodeDegrees[(int)(*(edgeIndex + 1*numOfEdges + j))]);
-                                }
+                                //}
                         }
-                }
+                //}
                 //*(featureTensor + numOfFeatures*i) = *(aggregationVar + i*numOfFeatures);
                 //*(featureTensor + numOfFeatures*i + 1) = *(aggregationVar + i*numOfFeatures + 1);
                 //*(aggregationVar + i*numOfFeatures) = 0.0;
                 //*(aggregationVar + i*numOfFeatures + 1) = 0.0;
-        }
+        //}
 
 
 }

@@ -91,7 +91,7 @@ int LoadData(int arg) {
 
 	cudaProfilerStart();
 
-	CU_MP::GCNLayerNew<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
+	CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
@@ -205,7 +205,7 @@ int LoadData(int arg) {
 
         auto start = std::chrono::steady_clock::now();
         cudaProfilerStart();
-        CU_WL::GINLayer<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        CU_WL::GINLayer<<<numOfNodes,512>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
         cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
