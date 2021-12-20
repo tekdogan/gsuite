@@ -25,30 +25,32 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
 
     printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
 
-    int64_t id_exEdges = (thread_idx / numOfNodes * numOfFeatures);
-    
-    int64_t index_info = thread_idx % (numOfFeatures*numOfDirectedEdges);
-    
-    int64_t id_r = (idx / numOfNodes);
-    
-    int64_t id_c = (id_r / numOfFeatures);
+    const int64_t id_exEdges = (thread_idx / numOfNodes * numOfFeatures);
 
+    const int64_t id_exNodes = (thread_idx / numOfDirectedEdges * numOfFeatures);
+	    
+    const int64_t id_exFeatures = (thread_idx / numOfNodes * numOfDirectedEdges);
+
+    // if an incoming edge to respected node
+    if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes )
+	*(featureTensor + numOfFeatures*( *(edgeIndex + numOfDirectedEdges + id_exEdges) )
+	    + id_exFeatures) = *(src + thread_idx);
     }
 
 
 
-
+    // the below part is on hold due to kernel update
     //if(i < numOfNodes) {
                 //for(int j=0; j<numOfDirectedEdges; j++) {
-			if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
+			//if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
 				//for(int k=0; k<numOfFeatures; k++) {
-					*(aggregationVar + i*numOfFeatures + k) += *(featureTensor + i*numOfFeatures + k);
+					//*(aggregationVar + i*numOfFeatures + k) += *(featureTensor + i*numOfFeatures + k);
 				//}
-			}
+			//}
                 //}
 
 		//for(int k=0; k<numOfFeatures; k++) {
-			*(outputFeatureMatrix + i*numOfFeatures + k) = (1 + epsilon)*(*(outputFeatureMatrix + i*numOfFeatures + k)) + *(aggregationVar + i*numOfFeatures + k);
+			//*(outputFeatureMatrix + i*numOfFeatures + k) = (1 + epsilon)*(*(outputFeatureMatrix + i*numOfFeatures + k)) + *(aggregationVar + i*numOfFeatures + k);
 		//}
     //}
 }
