@@ -12,11 +12,35 @@ namespace CU_WL {
 
 __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* tempFeatureValues, float* outputFeatureMatrix) {
 
-	int i = blockIdx.x;
-	int j = threadIdx.x;// + blockIdx.x * blockDim.x;
-	int k=j;
-	//printf("i: %d, j: %d, kk: %d\n", i, j, kk);
-	//printf("thread %d\n",i);
+	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	
+	if (thread_idx < numOfNodes*numOfFeatures*numOfDirectedEdges) {
+		
+		printf("thread_idx is: %d\n", thread_idx);
+		
+		printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
+		
+		const int64_t id_exEdges = (thread_idx / numOfNodes * numOfFeatures);
+		
+		const int64_t id_exNodes = (thread_idx / numOfDirectedEdges * numOfFeatures);
+		
+		const int64_t id_exFeatures = (thread_idx / numOfNodes * numOfDirectedEdges);
+		
+		// if an incoming edge to respected node
+		if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes ) {
+			// apply aggregation of the neighbour node's to temporary
+			// feature vector analogus to SAG formula
+			*(tempFeatureMatrix + numOfFeatures*( *(edgeIndex + numOfDirectedEdges + id_exEdges) )
+				+ id_exFeatures) += *(src + thread_idx);
+		}
+		
+		// TODO: update output matrix below
+		// ...
+		
+	}
+	
+	// below operations are going to be removed after the
+	// kernel update with new computation model
 	//if(i < numOfNodes) {
 	    
 	        // temporary feature values variable used during
