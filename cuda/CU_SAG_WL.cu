@@ -10,7 +10,8 @@
 
 namespace CU_WL {
 
-__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges, int numOfFeatures, float* tempFeatureValues, float* outputFeatureMatrix) {
+__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges,
+			 int numOfFeatures, float* tempFeatureValues, int* tempIncomingEdges, float* outputFeatureMatrix) {
 
 	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
@@ -32,10 +33,18 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 			// feature vector analogus to SAG formula
 			*(tempFeatureMatrix + numOfFeatures*( *(edgeIndex + numOfDirectedEdges + id_exEdges) )
 				+ id_exFeatures) += *(src + thread_idx);
+			
+			// increment number of incoming edges to corresponding node
+			tempIncomingEdges[id_exNodes]++;
 		}
 		
-		// TODO: update output matrix below
-		// ...
+		// sync threads before output update
+		// __syncthreads();
+		
+		// update output matrix
+		*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
+			(w1 * *(featureTensor + numOfFeatures*id_exNodes + id_exFeatures)) +
+			(w2 * (*(tempFeatureValues + numOfNodes*id_exNodes + id_exFeatures)/tempIncomingEdges[id_exNodes]));
 		
 	}
 	
