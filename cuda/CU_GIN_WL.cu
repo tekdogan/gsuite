@@ -29,19 +29,19 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
     if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes )
 	// then apply aggregation scheme of GCN
 	// to corresponding node's feature
-	*(featureTensor + numOfFeatures*( *(edgeIndex + numOfDirectedEdges + id_exEdges) )
-	    + id_exFeatures) = *(src + thread_idx);
-    }
+	*(featureTensor + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
+	    + id_exFeatures) = *(featureTensor + thread_idx);
+    
 	
     //sync threads before output update
     __syncthreads();
 
     // update output feature values
-    outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures =
+    *(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
 	    (1 + epsilon)*(*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures)) +
 	    *(aggregationVar + numOfFeatures*id_exNodes + id_exFeatures);
 
-
+    }
 
     // the below part is on hold due to kernel update
     //if(i < numOfNodes) {

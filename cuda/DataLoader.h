@@ -14,7 +14,7 @@
 #include"Data_Util.h"
 #include<unordered_map>
 #include<cuda_profiler_api.h>
-#include"cuda_sort.h"
+#include"sort/cuda_sort.h"
 
 extern "C" {
 

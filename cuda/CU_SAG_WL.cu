@@ -10,7 +10,7 @@
 
 namespace CU_WL {
 
-__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfEdges,
+__global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float w2, int numOfNodes, int numOfDirectedEdges,
 			 int numOfFeatures, float* tempFeatureValues, int* tempIncomingEdges, float* outputFeatureMatrix) {
 
 	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -31,8 +31,8 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 		if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes ) {
 			// apply aggregation of the neighbour node's to temporary
 			// feature vector analogus to SAG formula
-			*(tempFeatureMatrix + numOfFeatures*( *(edgeIndex + numOfDirectedEdges + id_exEdges) )
-				+ id_exFeatures) += *(src + thread_idx);
+			*(tempFeatureValues + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
+				+ id_exFeatures) += *(featureTensor + thread_idx);
 			
 			// increment number of incoming edges to corresponding node
 			tempIncomingEdges[id_exNodes]++;
@@ -61,26 +61,26 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 		//bool esc_var = false;
                         
                 // number of incoming edges to i
-                int tempIncomingEdges = 0;
+                //int tempIncomingEdges = 0;
 	        //printf("DEBUG: CU_WL::SAGLayer first part starting...\n");
 	        // scan through edge indices
                 //for(int j=0; j<numOfEdges; j++) {
 
-                        if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
+                        //if((*(edgeIndex + j)) == (float)i) { // if there is an edge incoming to node i
                                 
 				//printf("DEBUG: thread[%d] CU_WL::SAGLayer inside incoming edge\n", i);
 
                                 // add xj values to sum
                                 //for(int k=0; k<numOfFeatures; k++) {
-                                        *(tempFeatureValues + i*numOfNodes + k) += *(featureTensor + ((int)*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
+                                        //*(tempFeatureValues + i*numOfNodes + k) += *(featureTensor + ((int)*(edgeIndex + numOfEdges + j))*numOfFeatures + k);
                                 //}
                                 
                                 // increment number of incoming edges to node i
-                                tempIncomingEdges++;
+                                //tempIncomingEdges++;
 
 				// set escape variable
 				//esc_var = true;
-                        }
+                        //}
 			//else if(esc_var) {
 			//	// escape if thread's turn is over
 			//	//printf("thread %d escaping at %d\n", i, j);
@@ -95,7 +95,7 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 		//printf("DEBUG: numOfFeatures is %d\n", numOfFeatures);
                 // calculate new values of node features of i
                 //for(int k=0; k<numOfFeatures; k++) {
-			*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(featureTensor + i*numOfFeatures + k)) + (w2 * (*(tempFeatureValues + i*numOfNodes + k)/tempIncomingEdges));
+			//*(outputFeatureMatrix + i*numOfFeatures + k) = (w1 * *(featureTensor + i*numOfFeatures + k)) + (w2 * (*(tempFeatureValues + i*numOfNodes + k)/tempIncomingEdges));
 			//printf("DEBUG: CU_WL::SAGLayer inside the aggregation part.\n");
 			//printf("DEBUG: CU_WL::SAGLayer THREAD:%d calculated value of node %d feature %d is %f\n",i,i,k,(w1 * *(outputFeatureMatrix + i*numOfFeatures + k)) + (w2 * (*(tempFeatureValues + i*numOfNodes + k)/tempIncomingEdges)) );
 		//}
