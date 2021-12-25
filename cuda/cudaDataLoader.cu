@@ -18,11 +18,11 @@ int LoadData(int arg) {
 
 	std::unordered_map<int,int> nodeMap;
 
-	const char* edgeIndexFileName = "cora.cites";
+	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content";
+	const char* featureFileName = "cora.content.bak2";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -206,7 +206,7 @@ int LoadData(int arg) {
 
         auto start = std::chrono::steady_clock::now();
         cudaProfilerStart();
-        CU_WL::GINLayer<<<numOfNodes*featureSize*edgeIndexSize,NUM_OF_THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        CU_WL::GINLayer<<<numOfNodes*featureSize,NUM_OF_THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
         cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;

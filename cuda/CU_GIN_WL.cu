@@ -11,25 +11,25 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
     //printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
     //printf("thread_idx is: %d\n", thread_idx);
 
-    if (thread_idx < numOfNodes*numOfFeatures*numOfDirectedEdges) {
+    if (thread_idx < numOfNodes*numOfFeatures) {
     
     // get indices of the thread
     
-    printf("thread_idx is: %d\n", thread_idx);
+    //printf("thread_idx is: %d\n", thread_idx);
 
-    printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
+    //printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
 
-    const int64_t id_exEdges = (thread_idx / numOfNodes * numOfFeatures);
+    const int64_t id_exEdges = 0; //(thread_idx / numOfNodes * numOfFeatures);
 
-    const int64_t id_exNodes = (thread_idx / numOfDirectedEdges * numOfFeatures);
+    const int64_t id_exNodes = (thread_idx / numOfFeatures);
 
-    const int64_t id_exFeatures = (thread_idx / numOfNodes * numOfDirectedEdges);
+    const int64_t id_exFeatures = (thread_idx / numOfNodes);
 
     // if an incoming edge to respected node
     if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes )
 	// then apply aggregation scheme of GCN
 	// to corresponding node's feature
-	*(featureTensor + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
+	*(aggregationVar + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
 	    + id_exFeatures) = *(featureTensor + thread_idx);
     
 	
@@ -37,9 +37,10 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
     __syncthreads();
 
     // update output feature values
-    *(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
-	    (1 + epsilon)*(*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures)) +
-	    *(aggregationVar + numOfFeatures*id_exNodes + id_exFeatures);
+	*(outputFeatureMatrix + threadIdx.x) = 1.0;
+//    *(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
+//	    (1 + epsilon)*(*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures)) +
+//	    *(aggregationVar + numOfFeatures*id_exNodes + id_exFeatures);
 
     }
 
