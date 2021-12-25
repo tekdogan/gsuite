@@ -37,10 +37,10 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
     __syncthreads();
 
     // update output feature values
-	*(outputFeatureMatrix + threadIdx.x) = 1.0;
+	*(outputFeatureMatrix + threadIdx.x) =
 //    *(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
-//	    (1 + epsilon)*(*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures)) +
-//	    *(aggregationVar + numOfFeatures*id_exNodes + id_exFeatures);
+	    (1 + epsilon)*(*(outputFeatureMatrix + threadIdx.x)) +
+	    *(aggregationVar + threadIdx.x);
 
     }
 
