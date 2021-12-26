@@ -15,17 +15,17 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 
 	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
-	if (thread_idx < numOfNodes*numOfFeatures*numOfDirectedEdges) {
+	if (thread_idx < numOfNodes*numOfFeatures) {
 		
-		printf("thread_idx is: %d\n", thread_idx);
+		//printf("thread_idx is: %d\n", thread_idx);
 		
-		printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
+		//printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
 		
-		const int64_t id_exEdges = (thread_idx / numOfNodes * numOfFeatures);
+		const int64_t id_exEdges = (thread_idx / numOfDirectedEdges);
 		
-		const int64_t id_exNodes = (thread_idx / numOfDirectedEdges * numOfFeatures);
+		const int64_t id_exNodes = (thread_idx / numOfFeatures);
 		
-		const int64_t id_exFeatures = (thread_idx / numOfNodes * numOfDirectedEdges);
+		const int64_t id_exFeatures = (thread_idx / numOfNodes);
 		
 		// if an incoming edge to respected node
 		if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes ) {
@@ -39,12 +39,12 @@ __global__ void SAGLayer(float* edgeIndex, float* featureTensor, float w1, float
 		}
 		
 		// sync threads before output update
-		// __syncthreads();
+		__syncthreads();
 		
 		// update output matrix
-		*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
-			(w1 * *(featureTensor + numOfFeatures*id_exNodes + id_exFeatures)) +
-			(w2 * (*(tempFeatureValues + numOfNodes*id_exNodes + id_exFeatures)/tempIncomingEdges[id_exNodes]));
+//		*(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
+//			(w1 * *(featureTensor + numOfFeatures*id_exNodes + id_exFeatures)) +
+//			(w2 * (*(tempFeatureValues + numOfNodes*id_exNodes + id_exFeatures)/tempIncomingEdges[id_exNodes]));
 		
 	}
 	

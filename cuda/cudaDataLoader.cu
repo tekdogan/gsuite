@@ -2,7 +2,8 @@
 
 // number of threads per block
 #define TPB 1
-#define NUM_OF_THREADS 1024
+#define THREADS 1024
+#define BLOCKS(N) (N + THREADS - 1) / THREADS
 
 #ifdef __cplusplus
 extern "C" {
@@ -177,13 +178,16 @@ int LoadData(int arg) {
 
 	else if(arg == 3) { // execute CU_WL::SAG
 
-	float* outputFeatureMatrix, *tempFeatureValues;
+	float *outputFeatureMatrix, *tempFeatureValues;
+	int *tempIncomingEdges;
 	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
 	cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
+	cudaMalloc(&tempIncomingEdges, numOfNodes * sizeof(int));
 
 	auto start = std::chrono::steady_clock::now();
 	cudaProfilerStart();
-	//CU_WL::SAGLayer<<<numOfNodes,512>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
+	CU_WL::SAGLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize,
+		featureSize, tempFeatureValues, tempIncomingEdges, outputFeatureMatrix);
 	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
@@ -206,7 +210,7 @@ int LoadData(int arg) {
 
         auto start = std::chrono::steady_clock::now();
         cudaProfilerStart();
-        CU_WL::GINLayer<<<numOfNodes*featureSize,NUM_OF_THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
         cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;

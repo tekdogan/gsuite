@@ -19,28 +19,28 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
 
     //printf("blockIdx.x: %d, blockDim.x: %d, threadIdx.x: %d\n", blockIdx.x, blockDim.x, threadIdx.x);
 
-    const int64_t id_exEdges = 0; //(thread_idx / numOfNodes * numOfFeatures);
+    const int64_t id_exEdges = (thread_idx % numOfDirectedEdges);
 
     const int64_t id_exNodes = (thread_idx / numOfFeatures);
 
     const int64_t id_exFeatures = (thread_idx / numOfNodes);
 
     // if an incoming edge to respected node
-    if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes )
+    if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes ) {
 	// then apply aggregation scheme of GCN
 	// to corresponding node's feature
 	*(aggregationVar + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
 	    + id_exFeatures) = *(featureTensor + thread_idx);
-    
+    }
 	
     //sync threads before output update
     __syncthreads();
 
     // update output feature values
-	*(outputFeatureMatrix + threadIdx.x) =
+	*(outputFeatureMatrix + thread_idx) =
 //    *(outputFeatureMatrix + numOfFeatures*id_exNodes + id_exFeatures) =
-	    (1 + epsilon)*(*(outputFeatureMatrix + threadIdx.x)) +
-	    *(aggregationVar + threadIdx.x);
+	    (1 + epsilon)*(*(outputFeatureMatrix + thread_idx)) +
+	    *(aggregationVar + thread_idx);
 
     }
 
