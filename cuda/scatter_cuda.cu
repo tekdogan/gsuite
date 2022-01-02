@@ -25,10 +25,10 @@ scatter_kernel(const float *src_data, float *out_data,
     
     int64_t id_c = (id_r / numOfFeatures);
 
-    if(( *(edgeIndex + edgeIndexSize + index_info) == id_c)) { // an incoming edge to node id_r
+//    if(( *(edgeIndex + edgeIndexSize + index_info) == id_c)) { // an incoming edge to node id_r
         Reducer<scalar_t, REDUCE>::atomic_write(out_data + id_r * numOfFeatures + id_c,
-                                            src_data + id_r * numOfFeatures + id_c);
-    }
+                                            src_data[id_r * numOfFeatures + id_c]);
+//    }
   }
 }
 
@@ -59,14 +59,14 @@ scatter_cuda(float *src, float *index, int64_t dim,
              std::string reduce, int numOfNodes, int numOfFeatures,
              int numOfEdges) {
   
-  CHECK_CUDA(src);
-  CHECK_CUDA(index);
+//  CHECK_CUDA(src);
+//  CHECK_CUDA(index);
   
   cudaSetDevice(0);
   
-  float* out = calloc(edgeIndexSize * 2, sizeof(float));
+  float* out = (float*) calloc(numOfEdges * 2, sizeof(float));
   
-  float* arg_out = calloc(edgeIndexSize * 2, sizeof(float));
+  float* arg_out = (float*) calloc(numOfEdges * 2, sizeof(float));
   
   int64_t *arg_out_data = nullptr;
   
@@ -82,20 +82,21 @@ scatter_cuda(float *src, float *index, int64_t dim,
       //if (!optional_out.has_value())
       //  out.fill_(Reducer<scalar_t, REDUCE>::init());
 
-      scatter_kernel<scalar_t, REDUCE>
-          <<<BLOCKS(numOfNodes*numOfFeatures*numOfEdges), THREADS, 0, stream>>>(
-              src_data, out_data, numOfNodes, numOfFeatures, numOfEdges);
+      scatter_kernel<float, REDUCE>
+          <<<BLOCKS(numOfNodes*numOfFeatures*numOfEdges), THREADS>>>(
+              src, out, numOfNodes, numOfFeatures, numOfEdges);
 
       //if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
       //  out.masked_fill_(out == Reducer<scalar_t, REDUCE>::init(), (scalar_t)0);
-
+/*
       if (REDUCE == MIN || REDUCE == MAX)
         scatter_arg_kernel<scalar_t>
             <<<BLOCKS(numOfNodes), THREADS, 0, stream>>>(
                 src_data, out_data, numOfNodes, numOfFeatures,
                 numOfEdges);
+*/
     });
-  });
+
 
   return std::make_tuple(out, arg_out);
 }

@@ -13,6 +13,7 @@
 
 namespace CU_MP {
 
+/*
 void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees,
 		int numOfNodes, int numOfFeatures, int numOfEdges) {
 
@@ -20,25 +21,26 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, flo
 	
 	if (thread_idx < numOfNodes*numOfFeatures) {
 		
-		const int64_t id_exEdges = (thread_idx % numOfDirectedEdges);
+		const int64_t id_exEdges = (thread_idx % numOfEdges);
 		
 		const int64_t id_exNodes = (thread_idx / numOfFeatures);
 		
 		const int64_t id_exFeatures = (thread_idx / numOfNodes);
 		
 		// if an incoming edge to respected node
-		if( *(edgeIndex + numOfDirectedEdges + id_exEdges) == id_exNodes ) {
+		if( *(edgeIndex + numOfEdges + id_exEdges) == id_exNodes ) {
 			// then apply aggregation scheme of GCN
 			// to corresponding node's feature
-			*(aggregationVar + (int)numOfFeatures*( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )
+			*(aggregationVar + (int)numOfFeatures*( (int)*(edgeIndex + numOfEdges + id_exEdges) )
 			  + id_exFeatures) += *(featureTensor + thread_idx) *
 				1.0/sqrt(nodeDegrees[id_exNodes]*
-					 nodeDegrees[( (int)*(edgeIndex + numOfDirectedEdges + id_exEdges) )]);
+					 nodeDegrees[( (int)*(edgeIndex + numOfEdges + id_exEdges) )]);
 		}
 		
 	}
 	
 }
+*/
 
 __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees, int numOfNodes, int numOfFeatures, int numOfEdges) {
 
