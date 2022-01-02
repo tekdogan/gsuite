@@ -93,6 +93,14 @@ int LoadData(int arg) {
 
 	//cudaProfilerStart();
 
+	//TODO: calculate node degrees here via scatter kernel
+
+	//TODO: maybe we can calculate the 1/sqrt(degree) here
+
+	CU_MP::GCNLayer<<<BLOCKS(numOfNodes*numOfFeatures),THREADS>>>(edgeIndex, featureTensor, aggregationVar, nodeDegrees,
+                numOfNodes, numOfFeatures, numOfEdges);
+
+
 	CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);

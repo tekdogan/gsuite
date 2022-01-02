@@ -14,7 +14,7 @@
 namespace CU_MP {
 
 void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees,
-	      	int numOfNodes, int numOfFeatures, int numOfEdges) {
+		int numOfNodes, int numOfFeatures, int numOfEdges) {
 
 	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
