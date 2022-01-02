@@ -5,6 +5,8 @@
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
+#include "scatter_cuda.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,7 +53,7 @@ int LoadData(int arg) {
 
         float *h_aggregationVar = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
-        float *aggregationVar, *nodeDegrees;
+        float *aggregationVar, *nodeDegrees, *INDEX;
 
 	for(int i=0; i<edgeIndexSize; i++) {
 		h_nodeDegrees[(int)(*(h_edgeIndex + i))]++;
@@ -66,7 +68,7 @@ int LoadData(int arg) {
 
 	cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
 	cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
-
+	cudaMemset(INDEX, 0, featureSize*sizeof(float));
 
 	int *arr = (int*)calloc(2*edgeIndexSize, sizeof(int));
 
@@ -94,7 +96,7 @@ int LoadData(int arg) {
 	//cudaProfilerStart();
 
 	//TODO: calculate node degrees here via scatter kernel
-
+        auto a = scatter_cuda(nodeDegrees, INDEX, 1, "mean", numOfNodes, featureSize, edgeIndexSize);
 	//TODO: maybe we can calculate the 1/sqrt(degree) here
 
 /*
