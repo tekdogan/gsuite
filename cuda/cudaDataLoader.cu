@@ -91,13 +91,13 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 
-	cudaProfilerStart();
+	//cudaProfilerStart();
 
 	CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
 	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
-	cudaProfilerStop();
+	// cudaProfilerStop();
 
 	auto end = std::chrono::steady_clock::now();
 
@@ -124,9 +124,9 @@ int LoadData(int arg) {
 	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 
         auto start = std::chrono::steady_clock::now();
-	cudaProfilerStart();
+	// cudaProfilerStart();
         CU_SpMM::GINLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix, 0.1);
-	cudaProfilerStop();
+	// cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
@@ -158,9 +158,9 @@ int LoadData(int arg) {
 
 	std::cout << "DEBUG: CU_SpMM::GCN start...\n";
 	auto start = std::chrono::steady_clock::now();
-	cudaProfilerStart();
+	// cudaProfilerStart();
 	CU_SpMM::GCNLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix);
-	cudaProfilerStop();
+	// cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer CU_SpMM::GCN execution took " << dur_ms.count() << " ms\n";
@@ -185,11 +185,11 @@ int LoadData(int arg) {
 	cudaMalloc(&tempIncomingEdges, numOfNodes * sizeof(int));
 
 	auto start = std::chrono::steady_clock::now();
-	cudaProfilerStart();
+	// cudaProfilerStart();
 	CU_WL::SAGLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize,
 		featureSize, tempFeatureValues, tempIncomingEdges, outputFeatureMatrix);
 	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
-	cudaProfilerStop();
+	// cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
 	std::cout << "1-layer CU_WL::SAG execution took " << dur_ms.count() << " ms\n";
@@ -209,9 +209,9 @@ int LoadData(int arg) {
         cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
 
         auto start = std::chrono::steady_clock::now();
-        cudaProfilerStart();
+        // cudaProfilerStart();
         CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
-        cudaProfilerStop();
+        // cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer CU_WL::GIN execution took " << dur_ms.count() << " ms\n";

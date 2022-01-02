@@ -58,6 +58,8 @@ __global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregat
 			//*(outputFeatureMatrix + i*numOfFeatures + k) = (1 + epsilon)*(*(outputFeatureMatrix + i*numOfFeatures + k)) + *(aggregationVar + i*numOfFeatures + k);
 		//}
     //}
+
+
 }
 
 } // namespace end
