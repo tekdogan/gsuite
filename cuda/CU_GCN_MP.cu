@@ -9,21 +9,28 @@
 namespace CU_MP {
 
 
-void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees,
+void GCNLayer(float* h_edgeIndex, float* h_featureVector, float *h_aggregationVar, float *h_nodeDegrees,
 		int numOfNodes, int numOfFeatures, int numOfEdges) {
 
 	//int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
+
+	float *d_edgeIndex, *d_featureVector, *d_aggregationVar, *d_nodeDegrees;
+
+	//cudaMalloc( (void**) &d_featureVector, numOfNodes*numOfFeatures * sizeof(float));
+	//cudaMemcpy(d_featureVector, h_featureVector, numOfNodes*numOfFeatures * sizeof(float), cudaMemcpyHostToDevice);
+
 	
 	// compute the node degrees
-	auto res = scatter_cuda(nodeDegrees, edgeIndex, 1, "add", numOfNodes, featureSize, edgeIndexSize);
-	
+	auto res = scatter_cuda(h_nodeDegrees, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);
+
+	//migrate to host	
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
-		*(nodeDegrees + i) = 1/sqrt(*(nodeDegrees + i));
+//		*(h_nodeDegrees + i) = 1/sqrt(*(h_nodeDegrees + i));
 	}
 	
 	// aggregation scheme
-	auto out = scatter_cuda(featureTensor, edgeIndex, 1, "add", numOfNodes, featureSize, edgeIndexSize);
+	//auto out = scatter_cuda(h_featureVector, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);
 	
 	/*if (thread_idx < numOfNodes*numOfFeatures) {
 		

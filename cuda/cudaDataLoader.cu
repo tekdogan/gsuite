@@ -100,8 +100,8 @@ int LoadData(int arg) {
 	//TODO: maybe we can calculate the 1/sqrt(degree) here
 
 
-	CU_MP::GCNLayer(h_edgeIndex, h_featureTensor, h_aggregationVar, h_nodeDegrees,
-                numOfNodes, numOfFeatures, numOfEdges);
+	CU_MP::GCNLayer(edgeIndex, featureVector, aggregationVar, nodeDegrees,
+                numOfNodes, featureSize, edgeIndexSize);
 
 
 	//CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
