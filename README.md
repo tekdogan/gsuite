@@ -13,10 +13,10 @@
 <img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
 
 <a href="">
-<img src="https://img.shields.io/github/followers/tekdogan?style=social"/></a>
+<img src="https://img.shields.io/github/languages/code-size/tekdogan/gcn?style=plastic"/></a>
 
 <a href="">
-        <img src="https://img.shields.io/badge/NVIDIA-V100-76B900?style=for-the-badge&logo=nvidia&logoColor=white" /></a>
+        <img src="https://img.shields.io/github/last-commit/tekdogan/gcn?style=plastic" /></a>
 
 ### UI Parameters
 `--config`: (_mandatory_) local configuration file which includes default parameters  
