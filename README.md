@@ -1,17 +1,25 @@
-# GNN BM (draft)
+# GNN BM Suite (draft)
 
 #### :information_source: This repository incorporates the material about in-progress benchmark suite for Graph Neural Networks.
 
 <a href="https://github.com/tekdogan/gcn/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/tekdogan/gcn?style=plastic" /></a>
 
-<a href="https://circleci.com/gh/tekdogan/gcn/tree/master">
-        <img src="https://circleci.com/gh/tekdogan/gcn/tree/master.svg?style=badge" /></a>
 
+<a href="">
+<img src="https://img.shields.io/github/stars/tekdogan/gcn.svg"/></a>
 
+<a href="">
+<img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
+
+<a href="">
+<img src="https://img.shields.io/github/followers/tekdogan?style=social"/></a>
+
+<a href="">
+        <img src="https://img.shields.io/badge/NVIDIA-V100-76B900?style=for-the-badge&logo=nvidia&logoColor=white" /></a>
 
 ### UI Parameters
-`--config`: (_mandatory_) local configuration file which includes default hyperparameters  
+`--config`: (_mandatory_) local configuration file which includes default parameters  
 `--gpu-id` : (_optional_) device id  
 `--model` : (_optional_) GNN model  
 `--dataset` : (_optional_) dataset to be processed  
@@ -20,13 +28,6 @@
 `export PATH=/usr/local/cuda-8.0/bin:$PATH`  
 `export CPATH=/usr/local/cuda-8.0/include:$CPATH`  
 `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/usr/local/cuda-8.0/lib64/`  
-
-### Compilation (deprecated, better use makefile)
-_in cuda dir, compile codes using the command line below_    
-`nvcc -lcublas -std=c++11 -arch=compute_61 cuBlasUtil.cu Data_Util.cu CU_GCN_MP.cu CU_SpMM_GCN.cu CU_SAG_WL.cu cudaDataLoader.cu main.cpp -o cudaDataLoader.o`  
-
-_then call executable with a parameter_  
-`./cudaDataLoader.o 2`
 
 ### Profile via NVPROF
 `nvprof -f --analysis-metrics -o cudaDataLoader.nvprof ./cudaDataLoader.o --benchmark`  
