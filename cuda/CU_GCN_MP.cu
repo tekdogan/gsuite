@@ -5,12 +5,6 @@
 #include<cuda.h>
 #include "scatter_cuda.h"
 
-//#define DIRECTED_EDGES 4
-
-//#define NUM_NODES 3
-
-//#define FEATURE_LEN 3
-
 
 namespace CU_MP {
 
@@ -25,7 +19,7 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, flo
 	
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
-		*(numOfNodes + i) = 1/sqrt(numOfNodes);
+		*(nodeDegrees + i) = 1/sqrt(*(nodeDegrees + i));
 	}
 	
 	// aggregation scheme
