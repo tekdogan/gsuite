@@ -3,6 +3,7 @@
 #include"C_GCN_MP.h"
 #include<omp.h>
 #include<cuda.h>
+#include "scatter_cuda.h"
 
 //#define DIRECTED_EDGES 4
 
@@ -13,13 +14,24 @@
 
 namespace CU_MP {
 
-/*
+
 void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees,
 		int numOfNodes, int numOfFeatures, int numOfEdges) {
 
-	int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
+	//int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
-	if (thread_idx < numOfNodes*numOfFeatures) {
+	// compute the node degrees
+	auto res = scatter_cuda(nodeDegrees, edgeIndex, 1, "add", numOfNodes, featureSize, edgeIndexSize);
+	
+	// sqrt -0.5 of node degrees
+	for(int i=0; i<numOfNodes; i++) {
+		*(numOfNodes + i) = 1/sqrt(numOfNodes);
+	}
+	
+	// aggregation scheme
+	auto out = scatter_cuda(featureTensor, edgeIndex, 1, "add", numOfNodes, featureSize, edgeIndexSize);
+	
+	/*if (thread_idx < numOfNodes*numOfFeatures) {
 		
 		const int64_t id_exEdges = (thread_idx % numOfEdges);
 		
@@ -37,10 +49,10 @@ void GCNLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, flo
 					 nodeDegrees[( (int)*(edgeIndex + numOfEdges + id_exEdges) )]);
 		}
 		
-	}
+	}*/
 	
 }
-*/
+
 
 __global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees, int numOfNodes, int numOfFeatures, int numOfEdges) {
 
