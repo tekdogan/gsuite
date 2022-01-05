@@ -6,17 +6,17 @@
         <img src="https://img.shields.io/github/license/tekdogan/gcn?style=plastic" /></a>
 
 
-<a href="">
-<img src="https://img.shields.io/github/stars/tekdogan/gcn.svg"/></a>
-
-<a href="">
-<img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
+<a href="https://github.com/tekdogan/gcn/stargazers">
+<img src="https://img.shields.io/github/stars/tekdogan/gcn.svg?style=plastic"/></a>
 
 <a href="">
 <img src="https://img.shields.io/github/languages/code-size/tekdogan/gcn?style=plastic"/></a>
 
-<a href="">
+<a href="https://github.com/tekdogan/gcn/commits/master">
         <img src="https://img.shields.io/github/last-commit/tekdogan/gcn?style=plastic" /></a>
+
+<a href="https://github.com/tekdogan/gcn/commits/master">
+        <img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
 
 ### UI Parameters
 `--config`: (_mandatory_) local configuration file which includes default parameters  
