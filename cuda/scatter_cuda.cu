@@ -49,8 +49,7 @@ scatter_arg_kernel(float *src_data, float *out_data, int64_t *arg_out_data,
   }
 }*/
 
-std::tuple<float*, float*>
-scatter_cuda(float *src, float *index, int64_t dim,
+float* scatter_cuda(float *src, float *index, int64_t dim,
              std::string reduce, int numOfNodes, int numOfFeatures,
              int numOfEdges) {
   
@@ -78,7 +77,7 @@ scatter_cuda(float *src, float *index, int64_t dim,
       //  out.fill_(Reducer<scalar_t, REDUCE>::init());
 
       scatter_kernel<float, REDUCE>
-          <<<BLOCKS(numOfNodes*numOfFeatures*numOfEdges), THREADS>>>(
+          <<<BLOCKS(numOfNodes*numOfFeatures), THREADS>>>(
               src, out, numOfNodes, numOfFeatures, numOfEdges);
 
       //if (!optional_out.has_value() && (REDUCE == MIN || REDUCE == MAX))
@@ -93,5 +92,5 @@ scatter_cuda(float *src, float *index, int64_t dim,
     });
 
 
-  return std::make_tuple(out, arg_out);
+  return out;
 }
