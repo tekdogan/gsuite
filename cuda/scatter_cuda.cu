@@ -9,26 +9,21 @@
 template <typename scalar_t, ReductionType REDUCE>
 __global__ void
 scatter_kernel(const float *src_data, float *out_data,
-               int numOfNodes, int numOfFeatures, int numOfEdges) {
+               int numOfRows, int numOfColumns, int dim) {
 
   int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 
-  if (thread_idx < numOfNodes*numOfFeatures*numOfEdges) {
+  \\ TO DO: size of src_data
+  if (thread_idx < numOfNodes*numOfFeatures) {
     
     // get indices of the thread
     
-    int64_t idx = (thread_idx / numOfEdges);
+    int64_t id_c = (thread_idx / numOfRows);
     
-    int64_t index_info = thread_idx % (numOfFeatures*numOfEdges);
+    int64_t id_r = (thread_idx / numOfColumns);
     
-    int64_t id_r = (idx / numOfNodes);
-    
-    int64_t id_c = (id_r / numOfFeatures);
-
-//    if(( *(edgeIndex + edgeIndexSize + index_info) == id_c)) { // an incoming edge to node id_r
-        Reducer<scalar_t, REDUCE>::atomic_write(out_data + id_r * numOfFeatures + id_c,
-                                            src_data[id_r * numOfFeatures + id_c]);
-//    }
+    Reducer<scalar_t, REDUCE>::atomic_write(out_data + id_r * numOfColumns + id_c,
+                                            src_data[thread_idx]);
   }
 }
 
