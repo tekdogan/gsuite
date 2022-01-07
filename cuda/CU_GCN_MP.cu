@@ -13,14 +13,12 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 		int numOfNodes, int numOfFeatures, int numOfEdges) {
 
 	
-	// variable declarations for host variables
-	float *h_edgeIndex, *h_featureVector, *h_aggregationVar, *h_nodeDegrees;
 
 	// allocations for host variables
-	*h_edgeIndex = calloc(numOfEdges * 2, sizeof(float));
-	*h_featureVector = calloc(numOfNodes * numOfFeatures, sizeof(float));
-	*h_aggregationVar = calloc(numOfNodes * numOfFeatures, sizeof(float));
-	*h_nodeDegrees = calloc(numOfNodes, sizeof(float));
+	float *h_edgeIndex = (float*)calloc(numOfEdges * 2, sizeof(float));
+	float *h_featureVector = (float*)calloc(numOfNodes * numOfFeatures, sizeof(float));
+	float *h_aggregationVar = (float*)calloc(numOfNodes * numOfFeatures, sizeof(float));
+	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
 	
 	//cudaMalloc( (void**) &d_featureVector, numOfNodes*numOfFeatures * sizeof(float));
 	//cudaMemcpy(d_featureVector, h_featureVector, numOfNodes*numOfFeatures * sizeof(float), cudaMemcpyHostToDevice);
