@@ -3,8 +3,8 @@
 // a cpp based main file.
 
 //#include"DataLoader.h"
-#include "index_select.h"
-#include "Data_Util.h"
+#include "../index_select.h"
+#include "../Data_Util.h"
 #include <iostream>
 
 int main(int argc, char *argv[]) {

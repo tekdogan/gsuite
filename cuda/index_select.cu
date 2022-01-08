@@ -57,9 +57,10 @@ __global__ void indexSelectLargeIndex(float *src, int srcRows, int srcCols,
 	if (thread_idx < dstSize) {
 
 		// calculate the index info
-		const int id_row = (int)*( indices + (int)(thread_idx/indSize) );
+		const int id_row = (int)*( indices + (int)(thread_idx/srcCols) );
 		const int id_col = thread_idx % srcCols;
 
+//		printf("thread id: %d, id_row: %d, id_col, %d\n", thread_idx, id_row, id_col);
 		// update respected cell
 		*(out + thread_idx) = *(src + id_row*srcCols + id_col);
 	}
