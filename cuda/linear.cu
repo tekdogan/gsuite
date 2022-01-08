@@ -4,19 +4,21 @@
 #include "cuBlasUtil.h"
 
 void linear(float *src, int srcRows, int srcCols
-              float *out, int outRows, int outCols,
-               float *bias) {
+              float *out, int outRows, int outCols) {
   
-  float *w;
+  float *w, *d_src, *d_out;
   
   // allocate device memory for output
-  //cudaMalloc(&y,outRows*outCols*sizeof(float));
+  cudaMalloc(&d_out, outRows*outCols*sizeof(float));
+
+  cudaMalloc(&d_src, srcRows*srcCols*sizeof(float));
+  cudaMemcpy(d_src, src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
   
   // allocate device memory for weight
-  cudaMalloc(&w,srcCols*sizeof(float));
+  cudaMalloc(&w, srcCols*outCols*sizeof(float));
   
   // init weight matrix
-  initIdentityGPU<<<srcCols/128,128>>>(&w, srcCols, 1);
+  initIdentityGPU<<<srcCols/128,128>>>(&w, srcCols, outCols);
   
   gpu_blas_mmul(w, src, out, srcRows, srcCols, outCols, false, false, 1.0, 0.0);
   

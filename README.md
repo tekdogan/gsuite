@@ -38,4 +38,7 @@
 
 ### tests
 indexSelect:  
-`nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 index_select.cu Data_Util.cu test/main.cu -o test/main.o`
+`nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 index_select.cu Data_Util.cu test/indexSelect.cu -o test/indexSelect.o`
+
+linear:
+`nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 index_select.cu Data_Util.cu test/linear.cu -o test/linear.o`
