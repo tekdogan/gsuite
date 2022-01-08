@@ -13,9 +13,13 @@ void linear(float *src, int srcRows, int srcCols,
   
   // allocate device memory for weight
   cudaMalloc((void**) &w, srcCols*outCols*sizeof(float));
-  
+
+  float h_w[2] = {1,1};
+  cudaMemcpy(w, h_w, srcCols*outCols*sizeof(float), cudaMemcpyHostToDevice);
+
+
   // init weight matrix
-  initIdentityGPU<<<srcCols*outCols,1>>>(&w, srcCols, outCols);
+  //initIdentityGPU<<<srcCols*outCols,1>>>(&w, srcCols, outCols);
   
   gpu_blas_mmul(w, d_src, d_out, srcRows, srcCols, outCols, false, false, 1.0, 0.0);
   

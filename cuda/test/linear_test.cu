@@ -15,19 +15,19 @@ int main(int argc, char *argv[]) {
 
 	//LoadData(atoi(argv[1]));
 
-	float h_src[9] = {1,2,3,
-		          4,5,6,
-		          7,8,9};
+	float h_src[6] = {1,2,
+		          3,4,
+		          5,6};
 
 	int srcRows = 3;
-	int srcCols = 3;
+	int srcCols = 2;
 
 	int outRows = srcRows;
-	int outCols = 3;
+	int outCols = 1;
 
 	float *h_out = (float*)calloc(outRows*outCols, sizeof(float));
 
-	float *d_src, *d_out;
+	//float *d_src, *d_out;
 
 	//cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
 	//cudaMemcpy(d_src, h_src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
