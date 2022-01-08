@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 
 	int dim = 0;
 
-	int indices[2] = {0,2};
+	int h_indices[2] = {0,2};
 
 	int indSize = 2;
 
@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 	float *h_out = (float*)calloc(dstSize, sizeof(float));
 
 	float *d_src, *d_out;
+	int *d_indices;
 
 	cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
 	cudaMemcpy(d_src, h_src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
@@ -40,12 +41,15 @@ int main(int argc, char *argv[]) {
 	cudaMalloc((void**) &d_out, dstSize*sizeof(float));
         cudaMemcpy(d_out, h_out, dstSize*sizeof(float), cudaMemcpyHostToDevice);
 
+	cudaMalloc((void**) &d_indices, indSize*sizeof(int));
+	cudaMemcpy(d_indices, h_indices, indSize*sizeof(int), cudaMemcpyHostToDevice);
+
 	index_select(h_src, srcRows, srcCols,
-                    dim, indices, indSize, h_out);
+                    dim, h_indices, indSize, h_out);
 
-	cudaMemcpy(h_out, d_out, dstSize*sizeof(float), cudaMemcpyDeviceToHost);
+	//cudaMemcpy(h_out, d_out, dstSize*sizeof(float), cudaMemcpyDeviceToHost);
 
-	printDenseMatrix(h_src, dstSize/srcCols, srcCols);
+	printDenseMatrix(h_out, dstSize/srcCols, srcCols);
 
 	return 0;
 }
