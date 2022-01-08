@@ -1,5 +1,4 @@
-#pragma once
-#include<cuda.h>
+#include "index_select.h"
 
 float* index_select(float *src, int srcRows, int srcCols,
                     int dim, int* indices, int indSize,
@@ -14,11 +13,11 @@ float* index_select(float *src, int srcRows, int srcCols,
     }
     // index along y-axis
     else if(dim == 1){
-        dstTotalSize = indSize * srcNums;
+        dstTotalSize = indSize * srcRows;
     }
     else {
         printf("indexSelect kernel dimension error!\n");
-        return;
+        return src;
     }
     
     // allocate device memory for output
@@ -30,14 +29,14 @@ float* index_select(float *src, int srcRows, int srcCols,
 
     // launch kernel
     indexSelectLargeIndex<<<largeIndexGrid,largeIndexBlock>>>
-                    (src,srcRows,srcCols,dim,indices,dstTotalSize
-                    indSize, out);
+                    (src,srcRows,srcCols,dim,indices,indSize,
+			dstTotalSize,out);
 
     return out;
 }
 
-__global__ indexSelectLargeIndex(float *src, int srcRows, int srcCols,
-                    int dim, int* indices, int indSize, int dstSize
+__global__ void indexSelectLargeIndex(float *src, int srcRows, int srcCols,
+                    int dim, int* indices, int indSize, int dstSize,
                     float *out) {
     
 	const int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -45,11 +44,11 @@ __global__ indexSelectLargeIndex(float *src, int srcRows, int srcCols,
 	if (thread_idx < dstSize) {
 
 		// calculate the index info
-		const id_row = *( indices + (int)(thread_idx/indSize) );
-		const id_col = thread_idx % srcCols;
+		const int id_row = (int)*( indices + (int)(thread_idx/indSize) );
+		const int id_col = thread_idx % srcCols;
 
 		// update respected cell
-		*(out + threadid_x) = *(src + id_row*srcCols + id_col);
+		*(out + thread_idx) = *(src + id_row*srcCols + id_col);
 	}
     
 }
