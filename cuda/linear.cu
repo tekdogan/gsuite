@@ -1,9 +1,6 @@
-#include <cuda_runtime_api.h> // cudaMalloc, cudaMemcpy, etc.
-#include <cusparse.h>         // cusparseSpMM
-#include <cublas_v2.h>
-#include "cuBlasUtil.h"
+#include "linear.h"
 
-void linear(float *src, int srcRows, int srcCols
+void linear(float *src, int srcRows, int srcCols,
               float *out, int outRows, int outCols) {
   
   float *w, *d_src, *d_out;
@@ -20,7 +17,7 @@ void linear(float *src, int srcRows, int srcCols
   // init weight matrix
   initIdentityGPU<<<srcCols/128,128>>>(&w, srcCols, outCols);
   
-  gpu_blas_mmul(w, src, out, srcRows, srcCols, outCols, false, false, 1.0, 0.0);
+  gpu_blas_mmul(w, d_src, d_out, srcRows, srcCols, outCols, false, false, 1.0, 0.0);
   
   //cudaMemcpy(out,y,outRows*outCols*sizeof(float),cudaMemcpyDeviceToHost);
   
