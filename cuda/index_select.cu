@@ -1,7 +1,7 @@
 #pragma once
 #include<cuda.h>
 
-void index_select(float *src, int srcRows, int srcCols,
+float* index_select(float *src, int srcRows, int srcCols,
                     int dim, int* indices, int indSize,
                     float *out) {
 
@@ -32,7 +32,8 @@ void index_select(float *src, int srcRows, int srcCols,
     indexSelectLargeIndex<<<largeIndexGrid,largeIndexBlock>>>
                     (src,srcRows,srcCols,dim,indices,dstTotalSize
                     indSize, out);
-    
+
+    return out;
 }
 
 __global__ indexSelectLargeIndex(float *src, int srcRows, int srcCols,

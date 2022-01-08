@@ -4,6 +4,8 @@
 #include<omp.h>
 #include<cuda.h>
 #include "scatter_cuda.h"
+#include "linear.h"
+#include "index_select.h"
 
 
 namespace CU_MP {
@@ -28,7 +30,7 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 	auto res = scatter_cuda(h_nodeDegrees, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);
 
 	// migrate device degrees output to host
-	cudaMemcpy(d_nodeDegrees, h_nodeDegrees, numOfNodes * sizeof(float), cudaMemcpyHostToDevice);
+	cudaMemcpy(h_nodeDegrees, d_nodeDegrees, numOfNodes * sizeof(float), cudaMemcpyHostToDevice);
 	
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
@@ -38,6 +40,14 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 	// migrate host degrees back to device
 	cudaMemcpy(h_nodeDegrees, d_nodeDegrees, numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
 	
+	// allocate memory on device for output of linear transform
+	float *d_outputLinear;
+	cudaMalloc(d_outputLinear, numOfNodes*outputSize*sizeof(float));
+
+	// linear transform
+	d_outputLinear = linear(d_featureVector, numOfNodes, numOfFeatures,
+               d_outputLinear, numOfNodes, outputSize);
+
 	// aggregation scheme
 	//auto out = scatter_cuda(h_featureVector, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);
 	
