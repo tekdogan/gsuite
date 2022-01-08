@@ -15,15 +15,15 @@ int main(int argc, char *argv[]) {
 
 	//LoadData(atoi(argv[1]));
 
-	float h_src[6] = {1,2,
-		          3,4,
-		          5,6};
+	float h_src[9] = {1,2,3,
+		          4,5,6,
+		          7,8,9};
 
 	int srcRows = 3;
-	int srcCols = 2;
+	int srcCols = 3;
 
 	int outRows = srcRows;
-	int outCols = 1;
+	int outCols = 3;
 
 	float *h_out = (float*)calloc(outRows*outCols, sizeof(float));
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
 
 	//cudaMemcpy(h_out, d_out, dstSize*sizeof(float), cudaMemcpyDeviceToHost);
 
-	//printDenseMatrix(h_out, dstSize/srcCols, srcCols);
+	printDenseMatrix(h_src, outRows, outCols);
 
 	return 0;
 }
