@@ -51,6 +51,11 @@ int LoadData(int arg) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
 
+	int *h_edgeIndexInt = (int*)calloc(2*edgeIndexSize, sizeof(int));
+	for(int i=0; i<2*edgeIndexSize; i++) {
+		*(h_edgeIndexInt + i) = *(h_edgeIndex + i);
+	}
+
         float *h_aggregationVar = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
         float *aggregationVar, *nodeDegrees, *INDEX;
@@ -100,7 +105,7 @@ int LoadData(int arg) {
 	//TODO: maybe we can calculate the 1/sqrt(degree) here
 
 
-	CU_MP::GCNLayer(edgeIndex, featureVector, aggregationVar, nodeDegrees,
+	CU_MP::GCNLayer(h_edgeIndexInt, featureVector, aggregationVar, nodeDegrees,
                 numOfNodes, featureSize, edgeIndexSize, 7);
 
 

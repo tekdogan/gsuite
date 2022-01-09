@@ -11,7 +11,7 @@
 namespace CU_MP {
 
 
-void GCNLayer(float* edgeIndex, float* featureVector, float *aggregationVar, float *nodeDegrees,
+void GCNLayer(int* edgeIndex, float* featureVector, float *aggregationVar, float *nodeDegrees,
 		int numOfNodes, int numOfFeatures, int numOfEdges, int outputSize) {
 
 	
