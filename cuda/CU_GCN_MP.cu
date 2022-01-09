@@ -11,8 +11,8 @@
 namespace CU_MP {
 
 
-void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVar, float *d_nodeDegrees,
-		int numOfNodes, int numOfFeatures, int numOfEdges) {
+void GCNLayer(float* edgeIndex, float* featureVector, float *aggregationVar, float *nodeDegrees,
+		int numOfNodes, int numOfFeatures, int numOfEdges, int outputSize) {
 
 	
 
@@ -24,8 +24,8 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 	float *h_ones = (float*)calloc(numOfNodes, sizeof(float));
 	
 	// first part of edgeIndex indicating sources
-	float *edgeSources = (float*)calloc(numOfEdges, sizeof(float));
-	memcpy(edgeSources, edgeIndex, numOfEdges);
+	int *h_edgeSources = (int*)calloc(numOfEdges, sizeof(int));
+	memcpy(h_edgeSources, edgeIndex, numOfEdges);
 
 	// ones to be used during node degree calculation
 	//for(int i=0; i<numOfNodes; i++) {
@@ -34,20 +34,27 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 	memset(h_ones, 1, numOfNodes);
 	
 	// compute the node degrees via scatter_add
-	h_nodeDegrees = scatter_cuda(h_nodeDegrees, h_edgeSources, 1, "sum", numOfEdges, 1, numOfEdges, 1, numOfNodes);
+	h_nodeDegrees = scatter_cuda(h_nodeDegrees, h_edgeSources, 1, "sum", numOfEdges/2, numOfEdges/2, 1, numOfEdges/2, 1);
 
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
 		*(h_nodeDegrees + i) = 1/sqrt(*(h_nodeDegrees + i));
 	}
 	
-	// allocate memory on device for output of linear transform
-	float *d_outputLinear;
-	cudaMalloc(d_outputLinear, numOfNodes*outputSize*sizeof(float));
+	float *h_outputLinear = (float*)calloc(numOfNodes*outputSize, sizeof(float));
 
 	// linear transform
-	d_outputLinear = linear(d_featureVector, numOfNodes, numOfFeatures,
-               d_outputLinear, numOfNodes, outputSize);
+	linear(featureVector, numOfNodes, numOfFeatures,
+               h_outputLinear, numOfNodes, outputSize);
+
+	int *edgeIndexSources = (int*)calloc(numOfEdges/2, sizeof(int));
+
+	float *indexSelectOutput = (float*)calloc((numOfEdges/2)*outputSize, sizeof(float));
+	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, edgeIndexSources, numOfEdges/2, indexSelectOutput);
+
+	int *h_edgeDest = (int*)calloc(numOfEdges, sizeof(int));
+	memcpy(h_edgeDest, edgeIndex+(numOfEdges/2), numOfEdges);
+	float *output = scatter_cuda(indexSelectOutput, h_edgeDest, 1, "sum", numOfEdges, numOfEdges, 1, numOfEdges, outputSize);
 
 	// aggregation scheme
 	//auto out = scatter_cuda(h_featureVector, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);

@@ -101,7 +101,7 @@ int LoadData(int arg) {
 
 
 	CU_MP::GCNLayer(edgeIndex, featureVector, aggregationVar, nodeDegrees,
-                numOfNodes, featureSize, edgeIndexSize);
+                numOfNodes, featureSize, edgeIndexSize, 7);
 
 
 	//CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
