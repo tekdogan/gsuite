@@ -28,21 +28,20 @@ int main(int argc, char *argv[]) {
 		3x4 node to feature vector
 	*/
 
-        float h_src[12] = {1};
+        float h_src[12] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-	int featureLen = 4;
 	int nodeCount = 5;
 	int edgeCount = 12;	
 
 	float *h_out = (float*)calloc(nodeCount,sizeof(float));
 
-	float h_edgeSource[12] = {0,0,0,1,1,2,2,2,3,3,4,4};
-	float h_edgeDest[12] = {1,2,4,0,3,0,3,4,1,2,0,2};
+	int h_edgeSource[12] = {0,0,0,1,1,2,2,2,3,3,4,4};
+	int h_edgeDest[12] = {1,2,4,0,3,0,3,4,1,2,0,2};
 
 
-	float* out = scatter_cuda(h_src, h_edgeSource, 1, "sum", edgeCount, 1, 12);
+	float* out = scatter_cuda(h_src, h_edgeSource, 1, "sum", edgeCount, 1, edgeCount, 1, nodeCount);
 
-	sleep(10);
+	sleep(3);
 
 	printDenseMatrix(out, 1, nodeCount);
 

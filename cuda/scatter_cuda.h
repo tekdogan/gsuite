@@ -12,6 +12,6 @@ float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
 
 template <typename scalar_t, ReductionType REDUCE>
 __global__ void
-scatter_kernel(const float *src_data, const *indices, float *out_data,
+scatter_kernel(const float *src_data, const int *indices, float *out_data,
                int numOfRows, int numOfColumns, int indSize, int dim);
 
