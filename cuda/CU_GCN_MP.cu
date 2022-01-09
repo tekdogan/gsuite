@@ -21,24 +21,25 @@ void GCNLayer(float* d_edgeIndex, float* d_featureVector, float *d_aggregationVa
 	float *h_featureVector = (float*)calloc(numOfNodes * numOfFeatures, sizeof(float));
 	float *h_aggregationVar = (float*)calloc(numOfNodes * numOfFeatures, sizeof(float));
 	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
+	float *h_ones = (float*)calloc(numOfNodes, sizeof(float));
 	
-	//cudaMalloc( (void**) &d_featureVector, numOfNodes*numOfFeatures * sizeof(float));
-	//cudaMemcpy(d_featureVector, h_featureVector, numOfNodes*numOfFeatures * sizeof(float), cudaMemcpyHostToDevice);
+	// first part of edgeIndex indicating sources
+	float *edgeSources = (float*)calloc(numOfEdges, sizeof(float));
+	memcpy(edgeSources, edgeIndex, numOfEdges);
 
+	// ones to be used during node degree calculation
+	//for(int i=0; i<numOfNodes; i++) {
+	//	*(h_ones + i) = 1;
+	//}
+	memset(h_ones, 1, numOfNodes);
 	
 	// compute the node degrees via scatter_add
-	auto res = scatter_cuda(h_nodeDegrees, h_edgeIndex, 1, "sum", numOfNodes, numOfFeatures, numOfEdges);
+	h_nodeDegrees = scatter_cuda(h_nodeDegrees, h_edgeSources, 1, "sum", numOfEdges, 1, numOfEdges, 1, numOfNodes);
 
-	// migrate device degrees output to host
-	cudaMemcpy(h_nodeDegrees, d_nodeDegrees, numOfNodes * sizeof(float), cudaMemcpyHostToDevice);
-	
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
 		*(h_nodeDegrees + i) = 1/sqrt(*(h_nodeDegrees + i));
 	}
-	
-	// migrate host degrees back to device
-	cudaMemcpy(h_nodeDegrees, d_nodeDegrees, numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
 	
 	// allocate memory on device for output of linear transform
 	float *d_outputLinear;
