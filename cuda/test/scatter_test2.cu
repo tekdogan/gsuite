@@ -39,11 +39,11 @@ int main(int argc, char *argv[]) {
 	int h_edgeDest[12] = {1,2,4,0,3,0,3,4,1,2,0,2};
 
 
-	float* out = scatter_cuda(h_src, h_edgeSource, 1, "sum", edgeCount, 1, edgeCount, 1, nodeCount);
+	float* out = scatter_cuda(h_src, h_edgeSource, 1, "sum", edgeCount, edgeCount, 1,  edgeCount, 1);
 
 	sleep(3);
 
-	printDenseMatrix(out, 1, nodeCount);
+	printDenseMatrix(out, nodeCount, 1);
 
         return 0;
 }

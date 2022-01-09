@@ -7,11 +7,18 @@ scatter_kernel(const float *src_data, const int *indices, float *out_data,
 
   int thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
 
+  int input_size = numOfRows*numOfColumns;
   // TO DO: size of src_data
-  if (thread_idx < indSize) {
+  if (thread_idx < input_size) {
 
-    Reducer<scalar_t, REDUCE>::atomic_write(out_data + (int)*(indices + thread_idx),
-                                            *(src_data + thread_idx));
+    int src_r = thread_idx / numOfColumns;
+    int src_c = thread_idx % numOfColumns;
+
+    int out_r = indices[src_r];
+    int out_c = src_c;
+
+    Reducer<scalar_t, REDUCE>::atomic_write(out_data + out_r*numOfColumns + out_c,
+                                            *(src_data + src_r*numOfColumns + src_c));
   }
 }
 

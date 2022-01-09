@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
 	int nodeCount = 5;
 	int edgeCount = 12;	
 
-	float h_edgeSource[12] = {0,0,0,1,1,2,2,2,3,3,4,4};
-	float h_edgeDest[12] = {1,2,4,0,3,0,3,4,1,2,0,2};
+	int h_edgeSource[12] = {0,0,0,1,1,2,2,2,3,3,4,4};
+	int h_edgeDest[12] =   {1,2,4,0,3,0,3,4,1,2,0,2};
 
         int srcRows = 5;
         int srcCols = 4;
@@ -57,18 +57,19 @@ int main(int argc, char *argv[]) {
 
 
 	float* d_src;
-	float* d_index;
+	int* d_index;
 
 
 	cudaMalloc((void**) &d_src, (featureLen * edgeCount)*sizeof(float));
 	cudaMemcpy(d_src, h_src, (featureLen * edgeCount)*sizeof(float), cudaMemcpyHostToDevice);
 
-	cudaMalloc((void**) &d_index, (edgeCount)*sizeof(float));
-        cudaMemcpy(d_index, h_edgeDest, (edgeCount)*sizeof(float), cudaMemcpyHostToDevice);
+	cudaMalloc((void**) &d_index, (edgeCount)*sizeof(int));
+        cudaMemcpy(d_index, h_edgeDest, (edgeCount)*sizeof(int), cudaMemcpyHostToDevice);
 
-	float* a = scatter_cuda(d_src, d_index, 1, "sum", nodeCount, featureLen, edgeCount);
 
-	sleep(10);
+	float* a = scatter_cuda(d_src, d_index, 1, "sum", edgeCount, edgeCount, featureLen, nodeCount, featureLen);
+
+	sleep(2);
 
 	
         float *h_out = (float*)calloc(nodeCount*featureLen, sizeof(float));
