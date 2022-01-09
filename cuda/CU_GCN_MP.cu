@@ -25,16 +25,16 @@ void GCNLayer(int* edgeIndex, float* featureVector, float *aggregationVar, float
 	
 	// first part of edgeIndex indicating sources
 	int *h_edgeSources = (int*)calloc(numOfEdges, sizeof(int));
-	memcpy(h_edgeSources, edgeIndex, numOfEdges);
+	memcpy(h_edgeSources, edgeIndex, numOfEdges*sizeof(int));
 
 	// ones to be used during node degree calculation
 	//for(int i=0; i<numOfNodes; i++) {
 	//	*(h_ones + i) = 1;
 	//}
-	memset(h_ones, 1, numOfNodes);
+	memset(h_ones, 1, numOfNodes*sizeof(float));
 	
 	// compute the node degrees via scatter_add
-	h_nodeDegrees = scatter_cuda(h_nodeDegrees, h_edgeSources, 1, "sum", numOfEdges/2, numOfEdges/2, 1, numOfEdges/2, 1);
+	h_nodeDegrees = scatter_cuda(h_nodeDegrees, h_edgeSources, 1, "sum", numOfEdges, numOfEdges, 1, numOfEdges, 1);
 
 	// sqrt -0.5 of node degrees
 	for(int i=0; i<numOfNodes; i++) {
@@ -47,13 +47,13 @@ void GCNLayer(int* edgeIndex, float* featureVector, float *aggregationVar, float
 	linear(featureVector, numOfNodes, numOfFeatures,
                h_outputLinear, numOfNodes, outputSize);
 
-	int *edgeIndexSources = (int*)calloc(numOfEdges/2, sizeof(int));
+	int *edgeIndexSources = (int*)calloc(numOfEdges, sizeof(int));
 
-	float *indexSelectOutput = (float*)calloc((numOfEdges/2)*outputSize, sizeof(float));
-	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, edgeIndexSources, numOfEdges/2, indexSelectOutput);
+	float *indexSelectOutput = (float*)calloc((numOfEdges)*outputSize, sizeof(float));
+	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, edgeIndexSources, numOfEdges, indexSelectOutput);
 
 	int *h_edgeDest = (int*)calloc(numOfEdges, sizeof(int));
-	memcpy(h_edgeDest, edgeIndex+(numOfEdges/2), numOfEdges);
+	memcpy(h_edgeDest, edgeIndex+(numOfEdges), numOfEdges);
 	float *output = scatter_cuda(indexSelectOutput, h_edgeDest, 1, "sum", numOfEdges, numOfEdges, 1, numOfEdges, outputSize);
 
 	// aggregation scheme
