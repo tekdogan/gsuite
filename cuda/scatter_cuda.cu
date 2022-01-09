@@ -18,7 +18,7 @@ scatter_kernel(const float *src_data, const *indices, float *out_data,
 
 float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
              std::string reduce, int indSize, int srcRows,
-             int srcCols) {
+             int srcCols, int outRows, int outCols) {
     
   cudaSetDevice(0);
   
@@ -33,7 +33,7 @@ float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
   cudaMemcpy(d_index, h_index, indSize*sizeof(int), cudaMemcpyHostToDevice);  
 
   float *d_out;
-  cudaMalloc((void**) &d_out, srcRows*srcCols*sizeof(float));
+  cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
   
 
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
@@ -46,6 +46,9 @@ float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
 		indSize, dim);
 
     });
+
+  float *h_out = (float*)calloc(outRows*outCols, sizeof(float));
+  cudaMemcpy(h_out, d_out, outRows*outCols*sizeof(float), cudaMemcpyDeviceToHost);
 
   return out;
 }

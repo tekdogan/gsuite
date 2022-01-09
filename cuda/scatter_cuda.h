@@ -8,7 +8,7 @@
 
 float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
              std::string reduce, int indSize, int srcRows,
-             int srcCols);
+             int srcCols, int outRows, int outCols);
 
 template <typename scalar_t, ReductionType REDUCE>
 __global__ void
