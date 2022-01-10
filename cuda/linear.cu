@@ -14,7 +14,8 @@ void linear(float *src, int srcRows, int srcCols,
   // allocate device memory for weight
   cudaMalloc((void**) &w, srcCols*outCols*sizeof(float));
 
-  float h_w[2] = {1,1};
+  float *h_w = (float*)calloc(srcCols*outCols, sizeof(float));
+  memset(h_w, 1, srcCols*outCols*sizeof(float));
   cudaMemcpy(w, h_w, srcCols*outCols*sizeof(float), cudaMemcpyHostToDevice);
 
 

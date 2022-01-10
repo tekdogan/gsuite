@@ -14,7 +14,7 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector, float *h_aggregationVa
 		int numOfNodes, int numOfFeatures, int numOfEdges, int outputSize) {
 
 	// allocations for host variables
-	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
+	//float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
 	float *h_ones = (float*)calloc(numOfNodes, sizeof(float));
 	
 	// first part of edgeIndex indicating sources
@@ -49,7 +49,7 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector, float *h_aggregationVa
 
 	// aggregation via scatter
 	int *h_edgeDest = (int*)calloc(numOfEdges, sizeof(int));
-	memcpy(h_edgeDest, edgeIndex+numOfEdges, numOfEdges*sizeof(int));
+	memcpy(h_edgeDest, h_edgeIndex+numOfEdges, numOfEdges*sizeof(int));
 	float *output = (float*)calloc(numOfNodes*outputSize, sizeof(float));
 	output = scatter_cuda(indexSelectOutput, h_edgeDest, 1, "sum", numOfEdges, numOfEdges, 1, numOfEdges, outputSize);
 	
