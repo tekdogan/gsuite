@@ -6,11 +6,15 @@ void linear(float *src, int srcRows, int srcCols,
   float *w, *d_src, *d_out;
   
   // allocate device memory for output
-  cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
+  cudaError_t e = cudaMalloc((void**) &d_out, 100*100*sizeof(float));
+
+  const char* err = cudaGetErrorString(e);
 
   cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
-  cudaMemcpy(d_src, src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
-  
+  e = cudaMemcpy(d_src, src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
+  err = cudaGetErrorString(e);  
+
+
   // allocate device memory for weight
   cudaMalloc((void**) &w, srcCols*outCols*sizeof(float));
 

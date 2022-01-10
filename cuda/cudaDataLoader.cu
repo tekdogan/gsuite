@@ -35,8 +35,8 @@ int LoadData(int arg) {
 	try {
 		h_featureVector = (float*) calloc(numOfNodes*featureSize, sizeof(float));
 		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize, nodeMap);
-		cudaMalloc( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
-		cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
+		// cudaMalloc( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
+		// cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
 	} catch(...) {
 		std::cout << "Could not allocate memory space for featureVector!\n";
 	}
@@ -44,8 +44,8 @@ int LoadData(int arg) {
 	try {
 		h_edgeIndex = (float*) calloc(2*edgeIndexSize, sizeof(float));
 		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
-		cudaMalloc( (void**) &edgeIndex, 2*edgeIndexSize * sizeof(float));
-		cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)2*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
+		// cudaMalloc( (void**) &edgeIndex, 2*edgeIndexSize * sizeof(float));
+		// cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)2*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
 		
 	} catch(...) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
@@ -53,7 +53,7 @@ int LoadData(int arg) {
 
 	int *h_edgeIndexInt = (int*)calloc(2*edgeIndexSize, sizeof(int));
 	for(int i=0; i<2*edgeIndexSize; i++) {
-		*(h_edgeIndexInt + i) = *(h_edgeIndex + i);
+		*(h_edgeIndexInt + i) = (int)*(h_edgeIndex + i);
 	}
 
         float *h_aggregationVar = (float*)calloc(numOfNodes * featureSize, sizeof(float));
@@ -68,12 +68,12 @@ int LoadData(int arg) {
 		*(h_aggregationVar + i) = 0.0;
 	}
 
-	cudaMalloc( (void**) &aggregationVar, numOfNodes * featureSize * sizeof(float));
-	cudaMemcpy(aggregationVar, h_aggregationVar, numOfNodes * featureSize * sizeof(float), cudaMemcpyHostToDevice);
+	// cudaMalloc( (void**) &aggregationVar, numOfNodes * featureSize * sizeof(float));
+	// cudaMemcpy(aggregationVar, h_aggregationVar, numOfNodes * featureSize * sizeof(float), cudaMemcpyHostToDevice);
 
-	cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
-	cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemset(INDEX, 0, featureSize*sizeof(float));
+	// cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
+	// cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
+	// cudaMemset(INDEX, 0, featureSize*sizeof(float));
 
 	int *arr = (int*)calloc(2*edgeIndexSize, sizeof(int));
 
@@ -82,7 +82,7 @@ int LoadData(int arg) {
 	                *(arr + i) = (int)( *(h_edgeIndex + i));
 	}
 
-	gpu_qsort(arr, edgeIndexSize, edgeIndexSize);
+	// gpu_qsort(arr, edgeIndexSize, edgeIndexSize);
 
 	for(int i=0; i<8; i++) {
 	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;

@@ -15,11 +15,17 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector, float *h_aggregationVa
 
 	// allocations for host variables
 	//float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
-	float *h_ones = (float*)calloc(numOfNodes, sizeof(float));
+	float *h_ones = (float*)calloc(numOfEdges, sizeof(float));
 	
 	// first part of edgeIndex indicating sources
 	int *h_edgeSources = (int*)calloc(numOfEdges, sizeof(int));
-	memcpy(h_edgeSources, h_edgeIndex, numOfEdges*sizeof(int));
+//	memcpy(h_edgeSources, h_edgeIndex, numOfEdges*sizeof(int));
+	for(int i = 0; i<numOfEdges; i++)
+	{
+		int d = h_edgeIndex[i];
+		h_edgeSources[i] = d;
+	}
+
 
 	// ones to be used during node degree calculation
 	//for(int i=0; i<numOfNodes; i++) {

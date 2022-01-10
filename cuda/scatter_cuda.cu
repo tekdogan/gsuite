@@ -17,8 +17,12 @@ scatter_kernel(const float *src_data, const int *indices, float *out_data,
     int out_r = indices[src_r];
     int out_c = src_c;
 
+//    printf("out data index: %d\n, out_r: %d, src_r: %d, indSize: %d\n", out_r*numOfColumns + out_c, out_r, src_r, indSize);
+
     Reducer<scalar_t, REDUCE>::atomic_write(out_data + out_r*numOfColumns + out_c,
                                             *(src_data + src_r*numOfColumns + src_c));
+    __syncthreads();
+
   }
 }
 
@@ -30,16 +34,28 @@ float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
   cudaSetDevice(0);
   
   float *d_src;
-  cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
-  cudaMemcpy(d_src, h_src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
+  cudaError_t e = cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
+  const char* err = cudaGetErrorString(e);
+
+  e = cudaMemcpy(d_src, h_src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
+  err = cudaGetErrorString(e);
+
 
   int *d_index;
-  cudaMalloc((void**) &d_index, indSize*sizeof(int));
-  cudaMemcpy(d_index, h_index, indSize*sizeof(int), cudaMemcpyHostToDevice);  
+  e = cudaMalloc((void**) &d_index, indSize*sizeof(int));
+  err = cudaGetErrorString(e);
+  
+
+  e = cudaMemcpy(d_index, h_index, indSize*sizeof(int), cudaMemcpyHostToDevice);  
+  err = cudaGetErrorString(e);
+
 
   float *d_out;
-  cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
-  
+  e = cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
+  err = cudaGetErrorString(e);
+
+
+ printf("out max size: %d\n", outRows*outCols);
 
     AT_DISPATCH_REDUCTION_TYPES(reduce, [&] {
       //if (!optional_out.has_value())
@@ -52,8 +68,21 @@ float* scatter_cuda(float *h_src, int *h_index, int64_t dim,
 
     });
 
+  printf("debug scatter kernel launched\n");
+
+  cudaDeviceSynchronize();
   float *h_out = (float*)calloc(outRows*outCols, sizeof(float));
-  cudaMemcpy(h_out, d_out, outRows*outCols*sizeof(float), cudaMemcpyDeviceToHost);
+  e = cudaMemcpy(h_out, d_out, outRows*outCols*sizeof(float), cudaMemcpyDeviceToHost);
+  err = cudaGetErrorString(e);
+
+  e = cudaFree(d_out);
+  err = cudaGetErrorString(e);
+
+  e = cudaFree(d_src);
+  err = cudaGetErrorString(e);
+  
+  e = cudaFree(d_index);
+  err = cudaGetErrorString(e);
 
   return h_out;
 }
