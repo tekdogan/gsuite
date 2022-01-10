@@ -43,5 +43,8 @@ indexSelect:
 linear:  
 `nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 linear.cu cuBlasUtil.cu Data_Util.cu test/linear_test.cu -o test/linear_test.o`
 
-scatter:  
+scatter (aggregation):  
+`nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 scatter_cuda.cu Data_Util.cu test/scatter_test1.cu -o test/scatter_test1.o`
+
+scatter (node degrees):  
 `nvcc -g --cudart shared -lcublas_static -lculibos -ldl -lpthread -lcudart -lcudadevrt -std=c++11 -gencode arch=compute_61,code=compute_61 scatter_cuda.cu Data_Util.cu test/scatter_test2.cu -o test/scatter_test2.o`
