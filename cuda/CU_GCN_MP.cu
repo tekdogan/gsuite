@@ -47,11 +47,9 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector, float *h_aggregationVa
 	linear(h_featureVector, numOfNodes, numOfFeatures,
                h_outputLinear, numOfNodes, outputSize);
 
-	int *h_edgeIndexSources = (int*)calloc(numOfEdges, sizeof(int));
-
 	// index select
 	float *indexSelectOutput = (float*)calloc(numOfEdges*outputSize, sizeof(float));
-	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, h_edgeIndexSources, numOfEdges, indexSelectOutput);
+	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, h_edgeSources, numOfEdges, indexSelectOutput);
 
 	// aggregation via scatter
 	int *h_edgeDest = (int*)calloc(numOfEdges, sizeof(int));
