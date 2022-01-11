@@ -220,13 +220,15 @@ int LoadData(int arg) {
 
 	else if(arg == 4) { // execute CU_WL::GIN
 
+	float* h_outputFeatureMatrix = (float*)calloc(7 * numOfNodes, sizeof(float));
+	
         float* outputFeatureMatrix, *tempFeatureValues;
         cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));
         cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
 
         auto start = std::chrono::steady_clock::now();
         // cudaProfilerStart();
-        CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
+        CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(h_edgeIndex, h_featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, h_outputFeatureMatrix, 7);
         // cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
