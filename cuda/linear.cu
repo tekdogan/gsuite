@@ -6,7 +6,7 @@ void linear(float *src, int srcRows, int srcCols,
   float *w, *d_src, *d_out;
   
   // allocate device memory for output
-  cudaError_t e = cudaMalloc((void**) &d_out, 100*100*sizeof(float));
+  cudaError_t e = cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
 
   const char* err = cudaGetErrorString(e);
 
