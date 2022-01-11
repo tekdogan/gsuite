@@ -228,13 +228,12 @@ int LoadData(int arg) {
 
         auto start = std::chrono::steady_clock::now();
         // cudaProfilerStart();
-        CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(h_edgeIndex, h_featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, h_outputFeatureMatrix, 7);
+        CU_WL::GINLayer(h_edgeIndex, h_featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, h_outputFeatureMatrix, 7);
         // cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer CU_WL::GIN execution took " << dur_ms.count() << " ms\n";
 
-        float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
         cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
 
 	}

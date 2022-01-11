@@ -1,11 +1,13 @@
 #include<iostream>
 #include"CU_GIN_WL.h"
 #include<cuda.h>
+#include"index_select.h"
+#include"linear.h"
 
 namespace CU_WL {
 
 float* GINLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float epsilon, int numOfNodes,
-	      int numOfDirectedEdges, int numOfFeatures, float* outputFeatureMatrix, int outputSize) {
+	      int numOfEdges, int numOfFeatures, float* outputFeatureMatrix, int outputSize) {
 
 	// first part of edgeIndex indicating sources
 	int *edgeSources = (int*)calloc(numOfEdges, sizeof(int));
