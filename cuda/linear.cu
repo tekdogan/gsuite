@@ -1,6 +1,6 @@
 #include "linear.h"
 
-void linear(float *src, int srcRows, int srcCols,
+float* linear(float *src, int srcRows, int srcCols,
               float *out, int outRows, int outCols) {
   
   float *w, *d_src, *d_out;
@@ -30,4 +30,5 @@ void linear(float *src, int srcRows, int srcCols,
   
   cudaMemcpy(out,d_out,outRows*outCols*sizeof(float),cudaMemcpyDeviceToHost);
   
+  return out;
 }
