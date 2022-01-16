@@ -5,7 +5,11 @@
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
-#include "scatter_cuda.h"
+#include "CU_SpMM_GCN.h"
+#include "CU_SpMM_GIN.h"
+#include "CU_SAG_WL.h"
+#include "C_GCN_MP.h"
+#include "CU_GIN_WL.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,7 +21,6 @@ int LoadData(int arg) {
 	//gpuErrchk( cudaPeekAtLastError() );
 	//gpuErrchk( cudaDeviceSynchronize() );
 	float *h_edgeIndex, *h_featureVector;
-	float *edgeIndex, *featureVector;
 
 	std::unordered_map<int,int> nodeMap;
 
@@ -35,8 +38,6 @@ int LoadData(int arg) {
 	try {
 		h_featureVector = (float*) calloc(numOfNodes*featureSize, sizeof(float));
 		loadFeatureVectorFromFile(featureFileName, h_featureVector, featureSize, nodeMap);
-		// cudaMalloc( (void**) &featureVector, numOfNodes*featureSize * sizeof(float));
-		// cudaMemcpy(featureVector, h_featureVector, numOfNodes*featureSize * sizeof(float), cudaMemcpyHostToDevice);
 	} catch(...) {
 		std::cout << "Could not allocate memory space for featureVector!\n";
 	}
@@ -44,9 +45,6 @@ int LoadData(int arg) {
 	try {
 		h_edgeIndex = (float*) calloc(2*edgeIndexSize, sizeof(float));
 		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
-		// cudaMalloc( (void**) &edgeIndex, 2*edgeIndexSize * sizeof(float));
-		// cudaMemcpy(edgeIndex, h_edgeIndex, (size_t)2*edgeIndexSize*sizeof(float), cudaMemcpyHostToDevice);
-		
 	} catch(...) {
 		std::cout << "Could not allocate memory space for edgeIndex!\n";
 	}
@@ -56,74 +54,27 @@ int LoadData(int arg) {
 		*(h_edgeIndexInt + i) = (int)*(h_edgeIndex + i);
 	}
 
-        float *h_aggregationVar = (float*)calloc(numOfNodes * featureSize, sizeof(float));
-	float *h_nodeDegrees = (float*)calloc(numOfNodes, sizeof(float));
-        float *aggregationVar, *nodeDegrees, *INDEX;
-
-	for(int i=0; i<edgeIndexSize; i++) {
-		h_nodeDegrees[(int)(*(h_edgeIndex + i))]++;
-	}
-
-	for(int i=0; i<numOfNodes*featureSize; i++) {
-		*(h_aggregationVar + i) = 0.0;
-	}
-
-	// cudaMalloc( (void**) &aggregationVar, numOfNodes * featureSize * sizeof(float));
-	// cudaMemcpy(aggregationVar, h_aggregationVar, numOfNodes * featureSize * sizeof(float), cudaMemcpyHostToDevice);
-
-	// cudaMalloc( (void**) &nodeDegrees, featureSize*sizeof(float));
-	// cudaMemcpy(nodeDegrees, h_nodeDegrees, featureSize*sizeof(float), cudaMemcpyHostToDevice);
-	// cudaMemset(INDEX, 0, featureSize*sizeof(float));
-
 	int *arr = (int*)calloc(2*edgeIndexSize, sizeof(int));
-
-	/*for(int i=0; i<8; i++) {
-	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
-	                *(arr + i) = (int)( *(h_edgeIndex + i));
-	}
-
-	// gpu_qsort(arr, edgeIndexSize, edgeIndexSize);
-
-	for(int i=0; i<8; i++) {
-	                //std::cout << "copying: " << (int)( *(h_edgeIndex + 2*i + j)) << std::endl;
-	                ( *(h_edgeIndex + i)) = (float)( *(arr + i));
-	}*/
-
-
-
-	//unordered_map<string, double>:: iterator itr;
-	//for (itr = umap.begin(); itr != umap.end(); itr++)
 
 	if(arg == 0) { // execute CU_MP_GCN
 
 	auto start = std::chrono::steady_clock::now();
 
-	//cudaProfilerStart();
-
-	//TODO: calculate node degrees here via scatter kernel
-        //auto a = scatter_cuda(nodeDegrees, INDEX, 1, "mean", numOfNodes, featureSize, edgeIndexSize);
-	//TODO: maybe we can calculate the 1/sqrt(degree) here
-
-
-	CU_MP::GCNLayer(h_edgeIndexInt, h_featureVector, h_aggregationVar, h_nodeDegrees,
-                numOfNodes, featureSize, edgeIndexSize, 7);
+        for(int i = 0; i<1; i++) {
+		float* o = CU_MP::GCNLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16);
+		o = CU_MP::GCNLayer(h_edgeIndexInt, o, numOfNodes, 16, edgeIndexSize, 7);	
+		free(o);
+	}
 
 
-	//CU_MP::GCNLayerNew<<<numOfNodes,512>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
-	//CU_MP::GCNLayerNew<<<16,SIZE>>>(edgeIndex, featureVector, aggregationVar, nodeDegrees, numOfNodes, featureSize, edgeIndexSize);
 
-	// cudaProfilerStop();
 
 	auto end = std::chrono::steady_clock::now();
 
 	std::chrono::duration<double, std::milli> dur_ms = end-start;
 	std::cout << "2-layer GCN execution took " << dur_ms.count() << " ms\n";
 
-	//for(int i=0; i<3; i++) {
-	//	std::cout << "Node" << i << " feature 0: " << *(featureVector + featureSize*i) << std::endl;
-	//	std::cout << "Node" << i << " feature 1: " << *(featureVector + featureSize*i + 1) << std::endl;
-	//}
 
 	} // CU_MP_GCN end
 
@@ -202,8 +153,8 @@ int LoadData(int arg) {
 
 	auto start = std::chrono::steady_clock::now();
 	// cudaProfilerStart();
-	CU_WL::SAGLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize,
-		featureSize, tempFeatureValues, tempIncomingEdges, outputFeatureMatrix);
+//	CU_WL::SAGLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize,
+//		featureSize, tempFeatureValues, tempIncomingEdges, outputFeatureMatrix);
 	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
 	// cudaProfilerStop();
 	auto end = std::chrono::steady_clock::now();
@@ -220,21 +171,8 @@ int LoadData(int arg) {
 
 	else if(arg == 4) { // execute CU_WL::GIN
 
-        float* outputFeatureMatrix, *tempFeatureValues;
-        cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));
-        cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
-
-        auto start = std::chrono::steady_clock::now();
-        // cudaProfilerStart();
-        CU_WL::GINLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, tempFeatureValues, 0.3, numOfNodes, edgeIndexSize, featureSize, outputFeatureMatrix);
-        // cudaProfilerStop();
-        auto end = std::chrono::steady_clock::now();
-        std::chrono::duration<double, std::milli> dur_ms = end-start;
-        std::cout << "1-layer CU_WL::GIN execution took " << dur_ms.count() << " ms\n";
-
-        float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
-        cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
-
+		float* output = CU_WL::GINLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16, 0.01);
+		free(output);		
 	}
 
 	//std::cout << "edge index matrix before sort:\n";
@@ -249,11 +187,11 @@ int LoadData(int arg) {
 	//printDenseMatrix(h_featureVector, featureSize, numOfNodes);
 	//std::cout << std::endl;
 
-	cudaFree(edgeIndex);
-	cudaFree(featureVector);
+	// cudaFree(edgeIndex);
+	// cudaFree(featureVector);
 	//cudaFree(featureVectorOutput);
-	cudaFree(aggregationVar);
-	cudaFree(nodeDegrees);
+	// cudaFree(aggregationVar);
+	// cudaFree(nodeDegrees);
 
 	//std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
 	//for( const std::pair<int,int>& n : nodeMap ) {

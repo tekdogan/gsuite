@@ -6,7 +6,7 @@ void linear(float *src, int srcRows, int srcCols,
   float *w, *d_src, *d_out;
   
   // allocate device memory for output
-  cudaError_t e = cudaMalloc((void**) &d_out, 100*100*sizeof(float));
+  cudaError_t e = cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
 
   const char* err = cudaGetErrorString(e);
 
@@ -20,14 +20,20 @@ void linear(float *src, int srcRows, int srcCols,
 
   float *h_w = (float*)calloc(srcCols*outCols, sizeof(float));
   memset(h_w, 1, srcCols*outCols*sizeof(float));
-  cudaMemcpy(w, h_w, srcCols*outCols*sizeof(float), cudaMemcpyHostToDevice);
-
+  e = cudaMemcpy(w, h_w, srcCols*outCols*sizeof(float), cudaMemcpyHostToDevice);
+  err = cudaGetErrorString(e);
 
   // init weight matrix
   //initIdentityGPU<<<srcCols*outCols,1>>>(&w, srcCols, outCols);
   
   gpu_blas_mmul(w, d_src, d_out, srcRows, srcCols, outCols, false, false, 1.0, 0.0);
-  
-  cudaMemcpy(out,d_out,outRows*outCols*sizeof(float),cudaMemcpyDeviceToHost);
-  
+
+  cudaDeviceSynchronize();
+
+  e = cudaMemcpy(out,d_out,outRows*outCols*sizeof(float),cudaMemcpyDeviceToHost);
+  err = cudaGetErrorString(e);
+
+  e = cudaFree(d_out);
+  cudaFree(w);
+  cudaFree(d_src);
 }

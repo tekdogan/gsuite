@@ -4,13 +4,8 @@
 #include<string>
 #include<chrono>
 #include<cstdlib>
-#include"C_GCN_MP.h"
-#include"CU_GIN_WL.h"
 #include<cuda.h>
 #include<cublas_v2.h>
-#include"CU_SpMM_GCN.h"
-#include"CU_SpMM_GIN.h"
-#include"CU_SAG_WL.h"
 #include"Data_Util.h"
 #include<unordered_map>
 #include<cuda_profiler_api.h>

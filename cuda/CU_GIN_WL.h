@@ -1,6 +1,7 @@
 namespace CU_WL {
 
-__global__ void GINLayer(float* edgeIndex, float* featureTensor, float *aggregationVar, float epsilon,
-                        int numOfNodes, int numOfDirectedEdges, int numOfFeatures, float* outputFeatureMatrix);
+
+float* GINLayer(int* h_edgeIndex, float* h_featureVector, int numOfNodes, int numOfFeatures,
+                        int numOfEdges, int outputSize, float eps);
 
 }

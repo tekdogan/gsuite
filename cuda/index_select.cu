@@ -45,6 +45,10 @@ float* index_select(float *src, int srcRows, int srcCols,
 
     cudaMemcpy(out, d_out, dstTotalSize*sizeof(int), cudaMemcpyDeviceToHost);
 
+
+    cudaFree(d_src);
+    cudaFree(d_indices);
+    cudaFree(d_out);
     return out;
 }
 
@@ -62,7 +66,10 @@ __global__ void indexSelectLargeIndex(float *src, int srcRows, int srcCols,
 
 //		printf("thread id: %d, id_row: %d, id_col, %d\n", thread_idx, id_row, id_col);
 		// update respected cell
-		*(out + thread_idx) = *(src + id_row*srcCols + id_col);
+
+		int data = *(src + id_row*srcCols + id_col);
+
+		*(out + thread_idx) = data;
 	}
     
 }

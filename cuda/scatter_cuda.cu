@@ -12,16 +12,19 @@ scatter_kernel(const float *src_data, const int *indices, float *out_data,
   if (thread_idx < input_size) {
 
     int src_r = thread_idx / numOfColumns;
-    int src_c = thread_idx % numOfColumns;
-
     int out_r = indices[src_r];
+
+    int src_c = thread_idx % numOfColumns;
     int out_c = src_c;
 
 //    printf("out data index: %d\n, out_r: %d, src_r: %d, indSize: %d\n", out_r*numOfColumns + out_c, out_r, src_r, indSize);
+    const float* address = src_data + src_r*numOfColumns + src_c;
+    
+    float data =  *(address);
+
 
     Reducer<scalar_t, REDUCE>::atomic_write(out_data + out_r*numOfColumns + out_c,
-                                            *(src_data + src_r*numOfColumns + src_c));
-    __syncthreads();
+                                            data);
 
   }
 }
