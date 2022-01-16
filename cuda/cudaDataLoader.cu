@@ -7,9 +7,9 @@
 
 #include "CU_SpMM_GCN.h"
 #include "CU_SpMM_GIN.h"
-#include "CU_SAG_WL.h"
 #include "C_GCN_MP.h"
 #include "CU_GIN_WL.h"
+#include "CU_SAG_MP.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -143,32 +143,10 @@ int LoadData(int arg) {
 
 	} // CU_SpMM_GCN end
 
-	else if(arg == 3) { // execute CU_WL::SAG
-
-	float *outputFeatureMatrix, *tempFeatureValues;
-	int *tempIncomingEdges;
-	cudaMalloc(&outputFeatureMatrix, featureSize * numOfNodes * sizeof(float));	
-	cudaMalloc(&tempFeatureValues, featureSize * numOfNodes * sizeof(float));
-	cudaMalloc(&tempIncomingEdges, numOfNodes * sizeof(int));
-
-	auto start = std::chrono::steady_clock::now();
-	// cudaProfilerStart();
-//	CU_WL::SAGLayer<<<BLOCKS(numOfNodes*featureSize),THREADS>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize,
-//		featureSize, tempFeatureValues, tempIncomingEdges, outputFeatureMatrix);
-	//CU_WL::SAGLayer2<<<numOfNodes/TPB,TPB>>>(edgeIndex, featureVector, 1.0, 0.2, numOfNodes, edgeIndexSize, featureSize, tempFeatureValues, outputFeatureMatrix);
-	// cudaProfilerStop();
-	auto end = std::chrono::steady_clock::now();
-	std::chrono::duration<double, std::milli> dur_ms = end-start;
-	std::cout << "1-layer CU_WL::SAG execution took " << dur_ms.count() << " ms\n";
-
-	float* h_outputFeatureMatrix = (float*)calloc(featureSize * numOfNodes, sizeof(float));
-	cudaMemcpy(h_outputFeatureMatrix, outputFeatureMatrix, featureSize * numOfNodes * sizeof(float), cudaMemcpyDeviceToHost);
-
-	//std::cout << "Output feature matrix:\n";
-	//printDenseMatrix(h_outputFeatureMatrix, featureSize, numOfNodes);
-
-	} // CU_WL::SAG end
-
+	else if(arg == 3) { // execute CU_MP::SAG
+		float* output = CU_MP::SAGELayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16);
+                free(output);
+	}
 	else if(arg == 4) { // execute CU_WL::GIN
 
 		float* output = CU_WL::GINLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16, 0.01);

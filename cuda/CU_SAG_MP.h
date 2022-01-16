@@ -2,7 +2,6 @@
 
 namespace CU_MP {
 
-void GCNLayer(float* edgeIndex, float* featureTensor, float* aggregationVar, float* nodeDegrees);
-__global__ void GCNLayerNew(float* edgeIndex, float* featureTensor, float *aggregationVar, float *nodeDegrees);
-
+float* SAGELayer(int* h_edgeIndex, float* h_featureVector, int numOfNodes, int numOfFeatures,
+                        int numOfEdges, int outputSize);
 }
