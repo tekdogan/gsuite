@@ -25,6 +25,13 @@
 `--dataset` : (_optional_) dataset to be processed  
 
 ### Before Compiling
+
+#### pascal lab
+`export PATH=/okyanus/progs/cuda/cuda-10.1/bin:$PATH`  
+`export CPATH=/okyanus/progs/cuda/cuda-10.1/include:$CPATH`  
+`export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/okyanus/progs/cuda/cuda-10.1/lib64/`  
+
+#### volta lab
 `export PATH=/usr/local/cuda-8.0/bin:$PATH`  
 `export CPATH=/usr/local/cuda-8.0/include:$CPATH`  
 `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH/usr/local/cuda-8.0/lib64/`  
