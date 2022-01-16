@@ -1,10 +1,12 @@
 #include "linear.h"
 
-void linear(float *src, int srcRows, int srcCols,
-              float *out, int outRows, int outCols) {
+float* linear(float *src, int srcRows, int srcCols, int outRows, int outCols) {
   
   float *w, *d_src, *d_out;
   
+  float *out;
+  out = (float*)calloc(outRows*outCols, sizeof(float));
+
   // allocate device memory for output
   cudaError_t e = cudaMalloc((void**) &d_out, outRows*outCols*sizeof(float));
 
@@ -36,4 +38,6 @@ void linear(float *src, int srcRows, int srcCols,
   e = cudaFree(d_out);
   cudaFree(w);
   cudaFree(d_src);
+  
+  return out;
 }

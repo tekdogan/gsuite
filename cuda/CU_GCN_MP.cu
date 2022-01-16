@@ -36,17 +36,12 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector,
 		*(h_nodeDegrees + i) = 1/sqrt(*(h_nodeDegrees + i));
 	}
 	
-	float *h_outputLinear = (float*)calloc(numOfNodes*outputSize, sizeof(float));
-
+	
 	// linear transform
-	linear(h_featureVector, numOfNodes, numOfFeatures,
-               h_outputLinear, numOfNodes, outputSize);
-
-	int *h_edgeIndexSources = (int*)calloc(numOfEdges, sizeof(int));
+	float* h_outputLinear = linear(h_featureVector, numOfNodes, numOfFeatures, numOfNodes, outputSize);
 
 	// index select
-	float *indexSelectOutput = (float*)calloc(numOfEdges*outputSize, sizeof(float));
-	indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, h_edgeIndexSources, numOfEdges, indexSelectOutput);
+	float* indexSelectOutput = index_select(h_outputLinear, numOfNodes, outputSize, 0, h_edgeSources, numOfEdges);
 
 
 
@@ -59,8 +54,8 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector,
 
 	free(h_ones);
 	free(h_edgeSources);
+	free(h_nodeDegrees);
 	free(h_outputLinear);
-	free(h_edgeIndexSources);
 	free(indexSelectOutput);
 	free(h_edgeDest);
 	return output;

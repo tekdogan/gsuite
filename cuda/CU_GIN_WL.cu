@@ -1,6 +1,8 @@
 #include<iostream>
 #include"CU_GIN_WL.h"
 #include<cuda.h>
+#include"index_select.h"
+#include"linear.h"
 
 #include "scatter_cuda.h"
 #include "index_select.h"
@@ -22,8 +24,7 @@ float* GINLayer(int* h_edgeIndex, float* h_featureVector, int numOfNodes, int nu
 	memcpy(h_edgeIndexDst, h_edgeIndex + numOfEdges, numOfEdges);
 
 
-        float *indexSelectOutput = (float*)calloc(numOfEdges*numOfFeatures, sizeof(float));
-        indexSelectOutput = index_select(h_featureVector, numOfNodes, numOfFeatures, 0, h_edgeIndexSrc, numOfEdges, indexSelectOutput);
+        float* indexSelectOutput = index_select(h_featureVector, numOfNodes, numOfFeatures, 0, h_edgeIndexSrc, numOfEdges);
 
 
 	float* aggrOutput = scatter_cuda(indexSelectOutput, h_edgeIndexDst, 1, "sum", numOfEdges, numOfEdges, numOfFeatures, numOfNodes, numOfFeatures);
@@ -33,8 +34,7 @@ float* GINLayer(int* h_edgeIndex, float* h_featureVector, int numOfNodes, int nu
 	}
 
 
-	float* output = (float*)calloc(numOfNodes * outputSize, sizeof(float));
-	linear(aggrOutput, numOfNodes, numOfFeatures, output, numOfNodes, outputSize);	
+	float* output = linear(aggrOutput, numOfNodes, numOfFeatures, numOfNodes, outputSize);	
 
 	
 	free(h_edgeIndexSrc);

@@ -4,5 +4,5 @@
 #include "cuBlasUtil.h"
 #include "Data_Util.h"
 
-void linear(float *src, int srcRows, int srcCols,
-              float *out, int outRows, int outCols);
+float* linear(float *src, int srcRows, int srcCols,
+              int outRows, int outCols);

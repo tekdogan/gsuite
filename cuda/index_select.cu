@@ -1,11 +1,13 @@
 #include "index_select.h"
 
 float* index_select(float *src, int srcRows, int srcCols,
-                    int dim, int* indices, int indSize,
-                    float *out) {
+                    int dim, int* indices, int indSize) {
 
 	float *d_src, *d_out;
 	int *d_indices;
+
+	float *out;
+	out = (float*)calloc(indSize*srcCols, sizeof(float));
 
 	cudaMalloc((void**) &d_src, srcRows*srcCols*sizeof(float));
 	cudaMemcpy(d_src, src, srcRows*srcCols*sizeof(float), cudaMemcpyHostToDevice);
