@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
 	//linear(h_src, srcRows, srcCols,
         //      h_out, outRows, outCols);
 	
-	linear(src, 100, 100,
-              out, 100, 100);
+	out = linear(src, 100, 100,
+              100, 100);
 
 	printDenseMatrix(h_src, outRows, outCols);
 

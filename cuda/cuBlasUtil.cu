@@ -36,6 +36,8 @@ void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k
 	// batched sgemm
 	//cublasStatus_t status = cublasSgemmBatched(handle, tA, tB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, 32);
 
+	cudaDeviceSynchronize();
+
 	if (status != CUBLAS_STATUS_SUCCESS) {
 		printf("CUBLAS operation failed\n");
 	}
