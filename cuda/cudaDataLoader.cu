@@ -144,7 +144,9 @@ int LoadData(int arg) {
 	} // CU_SpMM_GCN end
 
 	else if(arg == 3) { // execute CU_MP::SAG
+		cudaProfilerStart();
 		float* output = CU_MP::SAGELayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16);
+		cudaProfilerStop();
                 free(output);
 	}
 	else if(arg == 4) { // execute CU_WL::GIN
