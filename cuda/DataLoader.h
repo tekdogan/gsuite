@@ -18,14 +18,12 @@ int LoadData(int);
 
 int getEdgeIndexSizeFromFile(const char* fileName);
 
-void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<int, int> &nodeMap);
-
-void loadEdgeIndexFromFile2(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<int, int> &nodeMap);
+void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges, std::unordered_map<std::string, std::string> &nodeMap);
 
 int getFeatureSizeFromFile(const char* fileName);
 
 int getNumOfNodesFromFile(const char* fileName);
 
-void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<int, int> &nodeMap);
+void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<std::string, std::string> &nodeMap);
 
 }

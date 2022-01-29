@@ -49,6 +49,8 @@ void GINLayer(float* adjMatrix, float* featureTensor, int n_nodes, int n_edges, 
 	gpu_blas_mmul(d_I, d_A, d_I, n_nodes, n_nodes, n_nodes, false, false, 1.0, (1.0 + epsilon));
 	cudaFree(d_A);
 
+	cudaDeviceSynchronize();
+
 	// migrate node feature values from host to device
 	cudaMalloc(&d_X, n_nodes * n_features * sizeof(float));
 	cudaMemcpy(d_X, featureTensor, n_nodes * n_features * sizeof(float), cudaMemcpyHostToDevice);

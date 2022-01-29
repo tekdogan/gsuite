@@ -22,7 +22,7 @@ int LoadData(int arg) {
 	//gpuErrchk( cudaDeviceSynchronize() );
 	float *h_edgeIndex, *h_featureVector;
 
-	std::unordered_map<int,int> nodeMap;
+	std::unordered_map<std::string,std::string> nodeMap;
 
 	const char* edgeIndexFileName = "cora.cites.bak2";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
@@ -42,6 +42,8 @@ int LoadData(int arg) {
 		std::cout << "Could not allocate memory space for featureVector!\n";
 	}
 	
+	std::cout << "nodeMap.size(): " << nodeMap.size() << std::endl;
+
 	try {
 		h_edgeIndex = (float*) calloc(2*edgeIndexSize, sizeof(float));
 		loadEdgeIndexFromFile(edgeIndexFileName, h_edgeIndex, edgeIndexSize, nodeMap);
@@ -61,13 +63,12 @@ int LoadData(int arg) {
 	auto start = std::chrono::steady_clock::now();
 
         for(int i = 0; i<1; i++) {
-		float* o = CU_MP::GCNLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16);
-		o = CU_MP::GCNLayer(h_edgeIndexInt, o, numOfNodes, 16, edgeIndexSize, 7);	
+		cudaProfilerStart();
+		float* o = CU_MP::GCNLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 1028);
+		//o = CU_MP::GCNLayer(h_edgeIndexInt, o, numOfNodes, 16, edgeIndexSize, 7);	
 		free(o);
+		cudaProfilerStop();
 	}
-
-
-
 
 
 	auto end = std::chrono::steady_clock::now();
@@ -91,9 +92,9 @@ int LoadData(int arg) {
 	float* outputMatrix = (float*)calloc(numOfNodes * featureSize, sizeof(float));
 
         auto start = std::chrono::steady_clock::now();
-	// cudaProfilerStart();
+	cudaProfilerStart();
         CU_SpMM::GINLayer(adjMatrix, h_featureVector, numOfNodes, edgeIndexSize, featureSize, outputMatrix, 0.1);
-	// cudaProfilerStop();
+	cudaProfilerStop();
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double, std::milli> dur_ms = end-start;
         std::cout << "1-layer GIN execution took " << dur_ms.count() << " ms\n";
@@ -145,13 +146,13 @@ int LoadData(int arg) {
 
 	else if(arg == 3) { // execute CU_MP::SAG
 		cudaProfilerStart();
-		float* output = CU_MP::SAGELayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16);
+		float* output = CU_MP::SAGELayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 1024);
 		cudaProfilerStop();
                 free(output);
 	}
 	else if(arg == 4) { // execute CU_WL::GIN
 
-		float* output = CU_WL::GINLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 16, 0.01);
+		float* output = CU_WL::GINLayer(h_edgeIndexInt, h_featureVector, numOfNodes, featureSize, edgeIndexSize, 1024, 0.01);
 		free(output);		
 	}
 
@@ -222,10 +223,17 @@ int getEdgeIndexSizeFromFile(const char* fileName) {
 }
 
 void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int numOfEdges,
-			   std::unordered_map<int, int> &nodeMap) {
+			   std::unordered_map<std::string, std::string> &nodeMap) {
 
 	std::ifstream dsFile(fileName);
 	std::string line;
+
+	std::cout << fileName << std::endl;
+
+	if( strcmp( fileName,"cora.cites.bak2") == 0 )
+		std::cout << "DEBUG: CORA dataset edges are loading..." << std::endl;
+	if( strcmp( fileName,"citeseer.cites") == 0 )
+		std::cout << "DEBUG: CiteSeer dataset edges are loading..." << std::endl;
 
 	int i=0, j=0;
 
@@ -234,7 +242,7 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 			std::istringstream ss(line);
 			std::string word;
 			while(std::getline(ss, word, '\t')) {
-				*(edgeIndex + (numOfEdges*i) + j) = nodeMap.find(std::stof(word))->second;
+				*(edgeIndex + (numOfEdges*i) + j) = std::stoi( nodeMap.find(word)->second );
 				i = 1;
 			}
 		j++;
@@ -248,32 +256,7 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 
 }
 
-void loadEdgeIndexFromFile2(const char* fileName, float* edgeIndex, const int numOfEdges,
-                           std::unordered_map<int, int> &nodeMap) {
 
-        std::ifstream dsFile(fileName);
-        std::string line;
-
-        int i=0, j=0;
-
-        if(dsFile.is_open()) {
-                while(getline(dsFile, line)) {
-                        std::istringstream ss(line);
-                        std::string word;
-                        while(std::getline(ss, word, '\t')) {
-                                *(edgeIndex + i + j) = nodeMap.find(std::stof(word))->second;
-                                i = 1;
-                        }
-                j++;
-                i = 0;
-                }
-                std::cout << "DEBUG: edgeIndex loaded! j=" << j << std::endl;
-        }
-        else {
-                std::cout << "Could not open the feature dataset file!\n";
-        }
-
-}
 
 int getFeatureSizeFromFile(const char* fileName) {
 	std::ifstream dsFile(fileName);
@@ -316,31 +299,65 @@ int getNumOfNodesFromFile(const char* fileName) {
 
 }
 
-void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<int, int> &nodeMap) {
+void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int featureSize, std::unordered_map<std::string, std::string> &nodeMap) {
 	std::ifstream dsFile(fileName);
         std::string line;
 
         int i=0, j=0;
 
-        if(dsFile.is_open()) {
-                while(getline(dsFile, line)) {
-                        std::istringstream ss(line);
-                        std::string word;
-			std::getline(ss, word, '\t'); // escape node index
-			nodeMap.insert({std::stof(word),i});
-                        while(std::getline(ss, word, '\t')) {
-				if(word.length() < 5) {
-                                    *(featureVector + i*featureSize + j) = std::stof(word);
-                                    j += 1;
-				}
+	if( strcmp(fileName,"cora.content.bak2") == 0 )
+	{
+		std::cout << "DEBUG: CORA dataset features are loading..." << std::endl;
+
+	        if(dsFile.is_open()) {
+	                while(getline(dsFile, line)) {
+	                        std::istringstream ss(line);
+	                        std::string word;
+				std::getline(ss, word, '\t'); // escape node index
+				nodeMap.insert({word,std::to_string(i)});
+	                        while(std::getline(ss, word, '\t')) {
+					if(word.length() < 5) {
+	                                    *(featureVector + i*featureSize + j) = std::stof(word);
+	                                    j += 1;
+					}
+	                        }
+	                i++;
+	                j = 0;
+	                }
+	        }
+	        else {
+	                std::cout << "Could not open the feature dataset file!\n";
+	        }
+
+
+	}
+	else if( strcmp(fileName,"citeseer.content") == 0 )
+	{
+
+		std::cout << "DEBUG: CiteSeer dataset features are loading...\n";
+
+                if(dsFile.is_open()) {
+                        while(getline(dsFile, line)) {
+                                std::istringstream ss(line);
+                                std::string word;
+                                std::getline(ss, word, '\t'); // escape node index
+                                nodeMap.insert({word,std::to_string(i)});
+                                while(std::getline(ss, word, '\t')) {
+                                        if(word.length() < 2) {
+                                            *(featureVector + i*featureSize + j) = std::stof(word);
+                                            j += 1;
+                                        }
+                                }
+                        i++;
+                        j = 0;
                         }
-                i++;
-                j = 0;
                 }
-        }
-        else {
-                std::cout << "Could not open the feature dataset file!\n";
-        }
+                else {
+                        std::cout << "Could not open the feature dataset file!\n";
+                }
+
+	}
+
 }
 
 

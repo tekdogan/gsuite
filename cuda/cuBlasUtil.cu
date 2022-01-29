@@ -1,6 +1,7 @@
 #include<cublas_v2.h>
 #include"cuBlasUtil.h"
 #include<stdio.h>
+#include<algorithm>
 
 void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k, bool transA, bool transB, float Alpha, float Beta) {
 
@@ -31,10 +32,15 @@ void gpu_blas_mmul(const float *A, const float *B, float *C, int m, int n, int k
 	//cublasStatus_t status = cublasSgemm(handle, tA, tB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 	
 	// sgemm with precisions indicated
-	cublasStatus_t status = cublasSgemmEx(handle, tA, tB, m, n, k, alpha, A, CUDA_R_32F, lda, B, CUDA_R_32F, ldb, beta, C, CUDA_R_32F, ldc);
+	//cublasStatus_t status = cublasSgemmEx(handle, tA, tB, m, n, k, alpha, A, CUDA_R_32F, lda, B, CUDA_R_32F, ldb, beta, C, CUDA_R_32F, ldc);
 	
 	// batched sgemm
 	//cublasStatus_t status = cublasSgemmBatched(handle, tA, tB, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc, 32);
+
+	printf("##### m:%d n:%d k:%d\n", m, n, k);	
+	int gcd = std::__gcd(m,n);
+	// strided batched sgemm
+	cublasStatus_t status = cublasSgemmStridedBatched(handle, tA, tB, m/gcd, n/gcd, k/gcd, alpha, A, lda, m/gcd, B, ldb, k/gcd, beta, C, ldc, m/gcd, gcd);
 
 	cudaDeviceSynchronize();
 

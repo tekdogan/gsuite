@@ -19,8 +19,8 @@ int main(int argc, char *argv[]) {
 		          3,4,
 		          5,6};
 
-	float *src = (float*)calloc(100*100, sizeof(float));
-	float *out = (float*)calloc(100*100, sizeof(float));
+	float *src = (float*)calloc(3312*3704, sizeof(float));
+	float *out = (float*)calloc(3312*7, sizeof(float));
 	
 	int srcRows = 3;
 	int srcCols = 2;
@@ -33,8 +33,8 @@ int main(int argc, char *argv[]) {
 	//linear(h_src, srcRows, srcCols,
         //      h_out, outRows, outCols);
 	
-	out = linear(src, 100, 100,
-              100, 100);
+	out = linear(src, 3312, 3704,
+              3312, 7);
 
 	printDenseMatrix(h_src, outRows, outCols);
 

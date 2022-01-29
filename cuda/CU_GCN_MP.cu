@@ -36,7 +36,8 @@ float* GCNLayer(int* h_edgeIndex, float* h_featureVector,
 		*(h_nodeDegrees + i) = 1/sqrt(*(h_nodeDegrees + i));
 	}
 	
-	
+
+	std::cout << "### " << numOfNodes << " " << numOfFeatures << " " << outputSize << std::endl;
 	// linear transform
 	float* h_outputLinear = linear(h_featureVector, numOfNodes, numOfFeatures, numOfNodes, outputSize);
 
