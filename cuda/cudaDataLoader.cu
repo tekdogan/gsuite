@@ -24,11 +24,11 @@ int LoadData(int arg) {
 
 	std::unordered_map<std::string,std::string> nodeMap;
 
-	const char* edgeIndexFileName = "cora.cites.bak2";
+	const char* edgeIndexFileName = "pubmed.cites";
 	int edgeIndexSize = getEdgeIndexSizeFromFile(edgeIndexFileName);
 	std::cout << "edgeIndexSize: " << edgeIndexSize << std::endl;
 
-	const char* featureFileName = "cora.content.bak2";
+	const char* featureFileName = "pubmed.content";
 	int featureSize = getFeatureSizeFromFile(featureFileName);
 	std::cout << "featureSize: " << featureSize << std::endl;
 
@@ -230,10 +230,21 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 
 	std::cout << fileName << std::endl;
 
-	if( strcmp( fileName,"cora.cites.bak2") == 0 )
+	char sep = '\t';
+
+	if( strcmp( fileName,"cora.cites.bak2") == 0 ) {
 		std::cout << "DEBUG: CORA dataset edges are loading..." << std::endl;
-	if( strcmp( fileName,"citeseer.cites") == 0 )
+		sep = '\t';
+	}
+	if( strcmp( fileName,"citeseer.cites") == 0 ) {
 		std::cout << "DEBUG: CiteSeer dataset edges are loading..." << std::endl;
+		sep = '\t';
+	}
+	if( strcmp( fileName,"pubmed.cites" ) == 0 ) {
+		std::cout << "DEBUG: PubMed dataset edges are loading..." << std::endl;
+		sep = ',';
+
+	}
 
 	int i=0, j=0;
 
@@ -241,7 +252,7 @@ void loadEdgeIndexFromFile(const char* fileName, float* edgeIndex, const int num
 		while(getline(dsFile, line)) {
 			std::istringstream ss(line);
 			std::string word;
-			while(std::getline(ss, word, '\t')) {
+			while(std::getline(ss, word, sep)) {
 				*(edgeIndex + (numOfEdges*i) + j) = std::stoi( nodeMap.find(word)->second );
 				i = 1;
 			}
@@ -263,6 +274,9 @@ int getFeatureSizeFromFile(const char* fileName) {
 	std::string line, word;
 
 	int numOfFeatures = -1;
+
+	if( strcmp(fileName,"pubmed.content") == 0 )
+		return 500;
 
 	if(dsFile.is_open()) {
 		getline(dsFile, line);
@@ -357,6 +371,32 @@ void loadFeatureVectorFromFile(const char* fileName, float* featureVector, int f
                 }
 
 	}
+	else if( strcmp(fileName,"pubmed.content") == 0 )
+        {
+
+                std::cout << "DEBUG: PubMed dataset features are loading...\n";
+
+                if(dsFile.is_open()) {
+                        while(getline(dsFile, line)) {
+                                std::istringstream ss(line);
+                                std::string word;
+                                std::getline(ss, word, ','); // escape node index
+                                nodeMap.insert({word,std::to_string(i)});
+                                while(std::getline(ss, word, ',')) {
+                                        while(j<500) {
+                                            *(featureVector + i*featureSize + j) = std::stof(word);
+                                            j += 1;
+                                        }
+                                }
+                        i++;
+                        j = 0;
+                        }
+                }
+                else {
+                        std::cout << "Could not open the feature dataset file!\n";
+                }
+
+        }
 
 }
 
