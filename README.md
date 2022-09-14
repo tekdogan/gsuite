@@ -1,6 +1,6 @@
-# GNN BM Suite (draft)
+# gSuite
 
-#### :information_source: This repository incorporates the material about in-progress benchmark suite for Graph Neural Networks.
+#### :information_source: This repository incorporates the material of a benchmark suite for Graph Neural Network Inference.
 
 <a href="https://github.com/tekdogan/gcn/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/tekdogan/gcn?style=plastic" /></a>
@@ -17,6 +17,11 @@
 
 <a href="https://github.com/tekdogan/gcn/commits/master">
         <img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
+
+### Usage
+Just execute the main script by passing a few parameters (_see UI Parameters below_).  
+Example usage:  
+`python3 main.py --config "conf.json" --model "gcn" --dataset "cora"`
 
 ### UI Parameters
 `--config`: (_mandatory_) local configuration file which includes default parameters  
