@@ -17,10 +17,16 @@
 <a href="https://github.com/tekdogan/gcn/commits/master">
         <img src="https://img.shields.io/github/commit-activity/w/tekdogan/gcn?style=plastic"/></a>
         
-#### gSuite is a flexible and framework independent benchmark suite for Graph Neural Network at Inference level on GPUs.
-#### It allows researchers and engineers to build any desired GNN pipeline by just passing a few parameters to program.
-#### Choice can include using either a GNN framework (such as PyG and DGL) or our implementations, which are not dependent to any other ML libraries (such as PyTorch or Tensorflow).
+- gSuite is a flexible and framework independent benchmark suite for Graph Neural Networks at Inference level on GPUs.
+- It allows researchers and engineers to build any desired GNN pipeline by just passing a few parameters to program.
+- Choice can include using either a GNN framework (such as PyG and DGL) or our implementations, which are not dependent to any other ML libraries (such as PyTorch or Tensorflow).
+  
+Further information can be found in the paper:  
+  
+- [IEEE Xplore link](https://ieeexplore.ieee.org/document/9975401)  
+- [arXiv link](https://arxiv.org/abs/2210.11601)
 
+### Software Architecture
 ![gsuite-arch](./fig/gsuite-arch.png)
 
 ### Usage
