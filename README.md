@@ -29,6 +29,8 @@ Further information can be found in the paper:
 ### Software Architecture
 ![gsuite-arch](./fig/gsuite-arch.png)
 
+:warning: **This repository may contain out of date code chunks, which may lead compile to fail.**
+
 ### Usage
 Just execute the main script by passing a few parameters (_see UI Parameters below_).  
 Example usage:  
